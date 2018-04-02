@@ -5,6 +5,7 @@
             'v2-table__striped': stripe
         }
     ]" ref="table">
+        
         <div class="v2-table__table-wrapper">
             <div class="v2-table__table-container" ref="container">
                 <!-- 解耦 checkbox 和 table 在DOM结构上的耦合-->
@@ -42,14 +43,17 @@
                     :style="{width: !isContainerScroll ? contentWidth + 'px' : '100%', marginTop: contentMarginTop + 'px'}">
                         <table-col-group :columns="columns" v-if="data && data.length > 0"></table-col-group>
                         <div class="v2-table__table-tbody" v-if="data && data.length > 0">
-                            <table-row 
-                                v-for="(row, index) in rows" 
-                                :key="index" 
-                                :row="row"
-                                :rowIndex="index"
-                                :hoverRowIndex="hoverRowIndex" 
-                                :columns="columns">
-                            </table-row>
+                                <table-row 
+                                    v-for="(row, index) in rows"
+                                    :key="index" 
+                                    :row="row"
+                                    :rowIndex="index"
+                                    :hoverRowIndex="hoverRowIndex" 
+                                    :columns="columns">
+                                    <template slot="hoverOnRow">
+                                        <slot name="hoverOverArea"></slot>
+                                    </template>
+                                </table-row>
                         </div>
 
                         <!-- Empty data -->
@@ -109,14 +113,15 @@
                         ]" :style="{marginTop: contentMarginTop + 'px'}">
                             <table-col-group :columns="leftColumns"></table-col-group>
                             <div class="v2-table__table-tbody">
-                                <table-row 
-                                    v-for="(row, index) in rows" 
-                                    :key="index" 
-                                    :row="row"
-                                    :rowIndex="index" 
-                                    :hoverRowIndex="hoverRowIndex" 
-                                    :columns="leftColumns">
-                                </table-row>
+                                <template v-for="(row, index) in rows">
+                                    <table-row 
+                                        :key="index" 
+                                        :row="row"
+                                        :rowIndex="index" 
+                                        :hoverRowIndex="hoverRowIndex" 
+                                        :columns="leftColumns">
+                                    </table-row>
+                                </template>
                             </div>
                         </div>
                     </div>

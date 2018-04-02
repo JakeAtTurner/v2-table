@@ -1,5 +1,6 @@
 <template>
     <div class="v2-table__col-group">
+        <div style="width: 0px;"></div>
         <div v-for="(column, index) in columns" 
             :key="index"
             :style="getColStyle(column)">
