@@ -62,6 +62,8 @@ export default {
         return (
             <div class='v2-table__table-thead'>
                 <div class='v2-table__header-row'>
+                    {/* Have to add in the hover Over Header here as well. this aligns the Headers correctly */}
+                    <div key='hoverOverColumnHeader' class="v2-table__cell v2-table__column-cell" style={ {width: '0px'} } ></div>
                     {
                         this.columns.map((column, index) => {
                             return (
