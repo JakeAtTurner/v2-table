@@ -150,6 +150,12 @@ npm i
 npm run dev
 ```
 
+##TODO
+* need to add in information about the styling that is optional
+* row_hover_overlay__overLayPortion
+* row_hover_overlay__background
+* need to change the css selector for selecting the odd and even rows css styles. Look in table-row
+
 ## Thanks
 
 * [Element UI](http://element.eleme.io/2.0/#/en-US).

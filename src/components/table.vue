@@ -12,7 +12,6 @@
                 <checkboxList v-if="selectionColumn" 
                     :column="selectionColumn" 
                     :left="scrollLeft"
-                    :hoverRowIndex="hoverRowIndex" 
                     :top="scrollTop">
                 </checkboxList>
                 <!-- header -->
@@ -48,7 +47,6 @@
                                     :key="index" 
                                     :row="row"
                                     :rowIndex="index"
-                                    :hoverRowIndex="hoverRowIndex" 
                                     :columns="columns">
                                     <template slot="hoverOnRow">
                                         <slot name="hoverOverArea"></slot>
@@ -118,7 +116,6 @@
                                         :key="index" 
                                         :row="row"
                                         :rowIndex="index" 
-                                        :hoverRowIndex="hoverRowIndex" 
                                         :columns="leftColumns">
                                     </table-row>
                                 </template>
@@ -175,7 +172,6 @@
                                     :key="index" 
                                     :row="row"
                                     :rowIndex="index" 
-                                    :hoverRowIndex="hoverRowIndex" 
                                     :columns="rightColumns">
                                 </table-row>
                             </div>
@@ -197,6 +193,7 @@
                     </slot>
                 </div>
             </div>
+            <!-- TODO insert the pagination here -->
             <div class="v2-table__pagination-box" v-if="shownPagination" v-show="total > 0">
                 <div class="pagination-text-info" v-if="paginationInfo.text" v-html="paginationInfo.text"></div>
                 <div class="v2-table__pagination" @click="changeCurPage">
@@ -388,7 +385,6 @@
                 selectedIndex: [],
                 isAll: false,
                 isIndeterminate: false,
-                hoverRowIndex: -1,
 
                 containerWith: 0,
                 sort: {

@@ -1,20 +1,11 @@
 <template>
         <div role="row" id="roleIndex" ref="rowIndex" :class="[
-            getRowClass(),
-            {
-                'row-hover': isHovered
-            }
+            getRowClass()
         ]" :style="getRowStyle()" @mouseenter="handleRowHover" @mouseleave="handleRowLeave">
             <template v-if="isHovered">
-                <div class="row_hover_overlay">
-                    <div :style="overlayNameStyle" >
-                    </div>
-                    <!-- The row_hover_overlay__overLayPortion is the custom CSS for the background color -->
-                    <div class="row_hover_overlay__overLayPortion" :style="overlayStyle">
-                        <div class="table-hover-over-background row_hover_overlay__background"></div>
-                        <slot name="hoverOnRow"></slot>
-                    </div>
-                </div>
+                <row-hovered-section :nameStyle="overlayNameStyle" :overlayStyle="overlayStyle" >
+                    <slot name="hoverOnRow"></slot>
+                </row-hovered-section>
             </template>
             <template v-else>
                 <div></div>
@@ -32,6 +23,7 @@
 
 <script>
     import TableCell from './table-cell';
+    import RowHoveredSection from './table-row-hovered-section.vue';
 
     export default {
         props: {
@@ -45,19 +37,20 @@
                 default: () => {}
             },
 
-            rowIndex: [String, Number],
-            hoverRowIndex: [String, Number]
+            rowIndex: [String, Number]
         },
         inject: ['table'],
         data () {
             return {
                 rowHeight: 100,
                 nameColumWidth: 0,
-                overlayWidth: 0
+                overlayWidth: 0,
+                isHovered: false
             }
         },
         methods: {
             getRowClass () {
+                // TODO consolidate this to a css selector style instead
                 const cls = ['v2-table__row'];
                 if (this.table.stripe && (this.rowIndex + 1) % 2 === 0) {
                     cls.push('v2-table__row-striped');
@@ -83,11 +76,11 @@
             },
 
             handleRowHover (e) {
-                this.table.hoverRowIndex = this.rowIndex;
+                this.isHovered = true;
             },
 
             handleRowLeave () {
-                this.table.hoverRowIndex = -1;
+                this.isHovered = false;
             },
             resize () {
                 setTimeout(() => {
@@ -105,9 +98,6 @@
             }
         },
         computed: {
-            isHovered () {
-                return this.table.hoverRowIndex === this.rowIndex
-            },
             overlayNameStyle () {
                 let width = this.nameColumWidth
                 return { 
@@ -131,7 +121,8 @@
             window.removeEventListener('resize', this.resize)
         },
         components: {
-            TableCell
+            TableCell,
+            RowHoveredSection
         }
     };
 </script>

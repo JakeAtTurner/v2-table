@@ -24,7 +24,7 @@
                     :class="[
                         'v2-checkbox-item',
                         {
-                            'checkbox-hover': hoverRowIndex === index
+                            'checkbox-hover': isHovered
                         }
                     ]"
                     :style="getItemStyle(index)" @mouseenter="handleRowHover(index)" @mouseleave="handleRowLeave">
@@ -48,15 +48,15 @@
             top: {
                 type: Number,
                 default: 0
-            },
-            hoverRowIndex: [String, Number]
+            }
         },
 
         inject: ['table'],
 
         data () {
             return {
-                list: []
+                list: [],
+                isHovered: false
             };
         },
 
@@ -92,11 +92,11 @@
             },
 
             handleRowHover (index) {
-                this.table.hoverRowIndex = index;
+                this.isHovered = true;
             },
 
             handleRowLeave () {
-                this.table.hoverRowIndex = -1;
+                this.isHovered = false;
             }
         },
 
