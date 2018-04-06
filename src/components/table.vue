@@ -833,7 +833,10 @@
 
         beforeDestroy () {
             this.scrollbar && this.scrollbar.destroy();
-            this.container.removeEventListener('bs-update-scroll-value', this.updateHeaderWrapScrollLeft, false);
+            if (this.container) {
+                this.container.removeEventListener('bs-update-scroll-value',
+                this.updateHeaderWrapScrollLeft, false);                
+            }
         }
     };
 </script>
