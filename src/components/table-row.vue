@@ -2,7 +2,7 @@
         <div role="row" id="roleIndex" ref="rowIndex" :class="[
             getRowClass()
         ]" :style="getRowStyle()" @mouseenter="handleRowHover" @mouseleave="handleRowLeave">
-            <template v-if="isHovered">
+            <template v-if="isHoveredAndHasHovered">
                 <row-hovered-section :nameStyle="overlayNameStyle" :overlayStyle="overlayStyle" >
                     <slot name="hoverOnRow"></slot>
                 </row-hovered-section>
@@ -111,6 +111,10 @@
                     height: this.rowHeight + 'px',
                     width: this.overlayWidth + 'px'
                 }
+            },
+            isHoveredAndHasHovered () {
+                let hoverOnRowSection = this.$slots.hoverOnRow
+                return hoverOnRowSection && hoverOnRowSection.length > 0 && this.isHovered
             }
         },
         mounted () {
