@@ -47,10 +47,8 @@
                                     :key="index" 
                                     :row="row"
                                     :rowIndex="index"
-                                    :columns="columns">
-                                    <template slot="hoverOnRow">
-                                        <slot name="hoverOverArea"></slot>
-                                    </template>
+                                    :columns="columns"
+                                    :hoverOverlayComponent="hoverOverlayComponent">
                                 </table-row>
                         </div>
 
@@ -361,6 +359,11 @@
             lazyLoad: {
                 type: Boolean,
                 default: false
+            },
+            hoverOverlayComponent: String,
+            windowData: {
+                type: Boolean,
+                default: false
             }
         },
 
@@ -374,8 +377,10 @@
             const ch = Number.parseInt(this.height, 10);
             const rh = Number.parseInt(this.rowHeight, 10);
 
+            let voewportMin = 100;
+
             return {
-                rows: [],
+                rows: [],   // TODO change the name to displayed rows
                 columns: [],
                 leftColumns: [],
                 rightColumns: [],
@@ -401,12 +406,15 @@
                 renderPages: [],
                 pageDiff: 2,
 
+                // Windowing
+                increaseWindowHeight: 3000, /**[NUMBER] this is the height that the windowed data increases and decreases by*/
+
                 // for on demand loading
-                VOEWPORT_MIN_HEIGHT: 100,
+                VOEWPORT_MIN_HEIGHT: voewportMin,
                 ITEM_MIN_HEIGHT: 20,
                 rh: (this.isValidNumber(rh) || rh <= this.ITEM_MIN_HEIGHT) ? this.ITEM_MIN_HEIGHT : rh,
                 contentHeight: NaN,
-                bodyHeight: this.VOEWPORT_MIN_HEIGHT,
+                bodyHeight: voewportMin,
                 contentMarginTop: 0,
                 scrollTop: 0,
                 scrollLeft: 0
@@ -433,7 +441,11 @@
             },
 
             isMetLazyLoad () {
-                return this.lazyLoad && !this.shownPagination && this.bodyHeight > this.VOEWPORT_MIN_HEIGHT;
+                let booleanValue = this.lazyLoad && !this.shownPagination && this.bodyHeight > this.VOEWPORT_MIN_HEIGHT;
+                console.log({bodyHeight: this.bodyHeight, lazyLoad: this.lazyLoad,
+                    shownPagination: this.shownPagination, VOEWPORT_MIN_HEIGHT: this.VOEWPORT_MIN_HEIGHT})
+                console.log({isMetLazyLoad: booleanValue});
+                return booleanValue
             },
 
             tbodyHeight () {
@@ -480,6 +492,8 @@
             scrollTop (val) {
                 if (this.isMetLazyLoad) {
                     this.updateRenderRows();
+                } else if (this.windowData) {
+                    this.updateRenderRowsBasedOffWindow();
                 }
             }
         },
@@ -738,13 +752,58 @@
             updateRenderRows () {
                 this.rows = [].concat(this.getRenderRows());
             },
+            updateRenderRowsBasedOffWindow () {
+                this.rows = [].concat(this.getWindowedRenderedRows())
+            },
+
+            getWindowedRenderedRows () {
+                // TODO not sure if rh is up to date, need to make sure if it is the value of the actual height
+                let startingRowLength = this.rows.length;
+                const maxRowLength = this.data.length;
+                const showingAllData = startingRowLength === maxRowLength;
+                if (showingAllData) {
+                    return
+                }
+                let thresholdMark = 0.2;
+                const seenHeight = this.scrollTop + this.tbodyHeight;
+                const currentMaxHeight = this.rh * startingRowLength;
+                const threshold = 1 + thresholdMark;
+                const belowThreshold = 2 + thresholdMark;
+                const thresholdHeight = seenHeight * threshold;
+                const minimumHeight = this.increaseWindowHeight;
+                const minimumDataLength = minimumHeight / this.rh;
+                const hasMetMinimum = startingRowLength > minimumDataLength;
+                const isAboveThreshold = thresholdHeight > currentMaxHeight;
+                const differenceInHeight = seenHeight - currentMaxHeight;
+                const needToDecreaseNumberOfRowsSeen = differenceInHeight > (this.increaseWindowHeight * belowThreshold);
+                let maxAmountToAdd = 0;
+                if (!hasMetMinimum) {
+                    startingRowLength = 0;
+                    maxAmountToAdd = minimumDataLength;
+                } else if (needToDecreaseNumberOfRowsSeen) {
+                    // decrease it by 1 increase in Windowed Height
+                    let decreaseAmount = Math.ceil(this.increaseWindowHeight / this.rh);
+                    let startSplice = startingRowLength - decreaseAmount;
+                    let canDecrease = startSplice > minimumDataLength;
+                    if (canDecrease) {
+                        this.rows = this.rows.splice(0, startSplice)
+                    }
+                    return
+                } else if (isAboveThreshold && !showingAllData) {
+                    let amountToAdd = Math.ceil(this.increaseWindowHeight / this.rh);
+                    maxAmountToAdd = startingRowLength + amountToAdd;
+                }
+                for (let i = startingRowLength; i < maxRowLength && i < maxAmountToAdd; i++) {
+                    this.rows.push(Object.assign({}, this.data[i], {
+                        __index: i
+                    }));
+                }
+            },
 
             getRenderRows () {
                 const list = [];
-
                 const from = Math.floor(this.scrollTop / this.rh); 
                 const to = Math.ceil((this.scrollTop + this.tbodyHeight) / this.rh);
-                
                 for (let i = from; i < to; i++) {
                     if (typeof this.data[i] !== 'undefined') {
                         list.push(Object.assign({}, this.data[i], {
@@ -764,7 +823,7 @@
             this.sort = Object.assign({}, this.defaultSort, {
                 order: this.defaultSort.order || 'ascending'
             });
-
+            debugger
             if (this.height !== 'auto' && !this.isValidNumber(this.height)) {
                 this.bodyHeight = parseInt(this.height, 10) > this.VOEWPORT_MIN_HEIGHT ? parseInt(this.height, 10) : this.VOEWPORT_MIN_HEIGHT;
             }

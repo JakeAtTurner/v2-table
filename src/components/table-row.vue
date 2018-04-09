@@ -4,7 +4,7 @@
         ]" :style="getRowStyle()" @mouseenter="handleRowHover" @mouseleave="handleRowLeave">
             <template v-if="isHoveredAndHasHovered">
                 <row-hovered-section :nameStyle="overlayNameStyle" :overlayStyle="overlayStyle" >
-                    <slot name="hoverOnRow"></slot>
+                    <component v-bind:is="hoverOverlayComponent"/>
                 </row-hovered-section>
             </template>
             <template v-else>
@@ -37,7 +37,8 @@
                 default: () => {}
             },
 
-            rowIndex: [String, Number]
+            rowIndex: [String, Number],
+            hoverOverlayComponent: String
         },
         inject: ['table'],
         data () {
@@ -113,8 +114,7 @@
                 }
             },
             isHoveredAndHasHovered () {
-                let hoverOnRowSection = this.$slots.hoverOnRow
-                return hoverOnRowSection && hoverOnRowSection.length > 0 && this.isHovered
+                return this.hoverOverlayComponent && this.isHovered
             }
         },
         mounted () {
