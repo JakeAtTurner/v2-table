@@ -412,8 +412,11 @@
                 // for on demand loading
                 VOEWPORT_MIN_HEIGHT: voewportMin,
                 ITEM_MIN_HEIGHT: 20,
-                rh: (this.isValidNumber(rh) || rh <= this.ITEM_MIN_HEIGHT) ? this.ITEM_MIN_HEIGHT : rh,
-                contentHeight: NaN,
+                // TODO rh is not a valid number, it does not contain the row Height all the time
+                // need to ensure that this is always correct
+                // there is a way to get the rh, it is using the 
+                // BEFORE rh: (this.isValidNumber(rh) || rh <= this.ITEM_MIN_HEIGHT) ? this.ITEM_MIN_HEIGHT : rh,
+                rh: 58, // AFTER: this will service my needs all my rows have 56 hieght
                 bodyHeight: voewportMin,
                 contentMarginTop: 0,
                 scrollTop: 0,
@@ -431,25 +434,24 @@
                 // < this.containerWith ? this.containerWith : bodyMinWidth
                 return bodyMinWidth;
             },
-
             leftContainerWidth () {
                 return this.getFixedContainerWidth(this.leftColumns);
             },
-
             rightContainerWidth () {
                 return this.getFixedContainerWidth(this.rightColumns);
             },
-
             isMetLazyLoad () {
                 let booleanValue = this.lazyLoad && !this.shownPagination && this.bodyHeight > this.VOEWPORT_MIN_HEIGHT;
-                console.log({bodyHeight: this.bodyHeight, lazyLoad: this.lazyLoad,
-                    shownPagination: this.shownPagination, VOEWPORT_MIN_HEIGHT: this.VOEWPORT_MIN_HEIGHT})
-                console.log({isMetLazyLoad: booleanValue});
                 return booleanValue
             },
-
             tbodyHeight () {
                 return Math.ceil(this.bodyHeight / this.rh) * this.rh;
+            },
+            heightOfAllData () {
+                return Math.ceil(this.data.length * this.rh);
+            },
+            heightOfScrollingArea () {
+                return this.isMetLazyLoad || this.windowData ? this.heightOfAllData : this.$refs.content.scrollHeight
             }
         },
 
@@ -458,14 +460,16 @@
                 deep: true,
                 immediate: true,
                 handler (val) {
-                    if (this.isMetLazyLoad) {
-                        this.initRenderRows();
-                        if (this.scrollbar) {
-                            this.updateScrollbar();
-                        }
-                    } else {
-                        this.rows = [].concat(val);
-                    }
+                    this.initRows()
+                    // TODO implement for the scrollbar update...
+                    // if (this.isMetLazyLoad) {
+                    //     this.initRenderRows();
+                    //     if (this.scrollbar) {
+                    //         this.updateScrollbar();
+                    //     }
+                    // } else {
+                    //     this.rows = [].concat(val);
+                    // }
 
                     // if (this.updatedSelection && this.selectedIndex.length > 0) {
                     //     this.emitSelectChange();
@@ -490,11 +494,7 @@
             },
 
             scrollTop (val) {
-                if (this.isMetLazyLoad) {
-                    this.updateRenderRows();
-                } else if (this.windowData) {
-                    this.updateRenderRowsBasedOffWindow();
-                }
+                this.adjustRows()
             }
         },
 
@@ -521,7 +521,7 @@
                     this.$nextTick(() => {
                         this.scrollbar.update({
                             contentWidth: this.$refs.content.scrollWidth,
-                            contentHeight: this.isMetLazyLoad ? this.contentHeight : this.$refs.content.scrollHeight
+                            contentHeight: this.heightOfScrollingArea
                         });
                     });
                 }
@@ -743,21 +743,38 @@
                 });
             },
 
-            // on demand loading
-            initRenderRows () {
-                this.contentHeight = Math.ceil(this.data.length * this.rh);
-                this.rows = [].concat(this.getRenderRows());
+            initRows () {
+                if (this.data.length) {
+                    if (this.isMetLazyLoad) {
+                        this.setRenderedRows();
+                    } else if (this.windowData) {
+                        this.setRenderedRowsBasedOffWindow()
+                    }
+                    else {
+                        this.rows = [].concat(this.data);
+                    }
+                }
             },
 
-            updateRenderRows () {
+            adjustRows () {
+                if (this.isMetLazyLoad) {
+                    this.setRenderedRows();
+                } else if (this.windowData) {
+                    this.setRenderedRowsBasedOffWindow();
+                }
+            },
+            setRenderedRows () {
+                // TODO I do not like the idea of using [].concat  need faster shifting here...
                 this.rows = [].concat(this.getRenderRows());
             },
-            updateRenderRowsBasedOffWindow () {
-                this.rows = [].concat(this.getWindowedRenderedRows())
+            setRenderedRowsBasedOffWindow () {
+                // TODO need to figure out the best way to seperat the row and the new array generated
+                this.getWindowedRenderedRows()
             },
 
             getWindowedRenderedRows () {
                 // TODO not sure if rh is up to date, need to make sure if it is the value of the actual height
+                debugger;
                 let startingRowLength = this.rows.length;
                 const maxRowLength = this.data.length;
                 const showingAllData = startingRowLength === maxRowLength;
@@ -771,8 +788,8 @@
                 const belowThreshold = 2 + thresholdMark;
                 const thresholdHeight = seenHeight * threshold;
                 const minimumHeight = this.increaseWindowHeight;
-                const minimumDataLength = minimumHeight / this.rh;
-                const hasMetMinimum = startingRowLength > minimumDataLength;
+                const minimumDataLength = Math.ceil(minimumHeight / this.rh);
+                const hasMetMinimum = startingRowLength >= minimumDataLength;
                 const isAboveThreshold = thresholdHeight > currentMaxHeight;
                 const differenceInHeight = seenHeight - currentMaxHeight;
                 const needToDecreaseNumberOfRowsSeen = differenceInHeight > (this.increaseWindowHeight * belowThreshold);
@@ -788,7 +805,7 @@
                     if (canDecrease) {
                         this.rows = this.rows.splice(0, startSplice)
                     }
-                    return
+                    return 
                 } else if (isAboveThreshold && !showingAllData) {
                     let amountToAdd = Math.ceil(this.increaseWindowHeight / this.rh);
                     maxAmountToAdd = startingRowLength + amountToAdd;
@@ -823,7 +840,6 @@
             this.sort = Object.assign({}, this.defaultSort, {
                 order: this.defaultSort.order || 'ascending'
             });
-            debugger
             if (this.height !== 'auto' && !this.isValidNumber(this.height)) {
                 this.bodyHeight = parseInt(this.height, 10) > this.VOEWPORT_MIN_HEIGHT ? parseInt(this.height, 10) : this.VOEWPORT_MIN_HEIGHT;
             }
@@ -849,11 +865,7 @@
             this.rightColumns = [].concat(fixedRightColumnComponents);
             this.selectionColumn = selectionColumnComponents.length > 0 ? selectionColumnComponents[0] : null;
 
-            if (this.data.length && this.isMetLazyLoad) {
-                this.initRenderRows();
-            } else if (this.data.length) {
-                this.rows = [].concat(this.data);
-            }
+            this.initRows()
 
             // Whether scroll event binding table-container element or table-body element
             if (this.leftColumns.length || this.rightColumns.length || this.bodyHeight > this.VOEWPORT_MIN_HEIGHT) {
@@ -875,7 +887,7 @@
                 this.container = this.isContainerScroll ? this.$refs.container : this.$refs.body;
                 this.scrollbar = new BeautifyScrollbar(this.container, {
                     contentWidth: this.$refs.content.scrollWidth,
-                    contentHeight: this.isMetLazyLoad ? this.contentHeight : this.$refs.content.scrollHeight
+                    contentHeight: this.heightOfScrollingArea
                 });
                 this.container.addEventListener('bs-update-scroll-value', this.updateHeaderWrapScrollLeft, false);
             });
