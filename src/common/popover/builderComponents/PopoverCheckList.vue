@@ -4,13 +4,14 @@
       <div class="list-popover__option"
         :key="option.name"
         :style="optionStyle"
-        @click="selectOption(option.value)"
         :id="`popover-box-option-${option.name}`"
       >
         <span class="check-list-popover-option">
           {{ option.name }}
         </span>
-        <input type='checkbox' :checked="selectedOptions.filter(o => o === option.value).length > 0"/>
+        <input type='checkbox' @click="selectOption(option.value)"
+          :checked="selectedOptions.filter(o => o === option.value).length > 0"
+        />
       </div>
     </template>
   </popover-box>

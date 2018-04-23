@@ -40,23 +40,28 @@ const FILTER_TYPES = {
 }
 
 const applyOptions = function (filter, data) {
-  let obj = {}
-  let field = filter.field
-  for (let d of data) {
-    let value = getAttribute(d, field)
-    let list = obj[value]
-    if (!list) {
-      list = []
-      obj[value] = list
-    }
-    list.push(d)
-  }
   debugger
-  let filteredList = []
-  for (let key of Object.keys(filter.values)) {
-    filteredList.push.apply(filteredList, obj[key])
+  let keys = Object.keys(filter.values)
+  if (keys.length > 0) {
+    let obj = {}
+    let field = filter.field
+    for (let d of data) {
+      let value = getAttribute(d, field)
+      let list = obj[value]
+      if (!list) {
+        list = []
+        obj[value] = list
+      }
+      list.push(d)
+    }
+    let filteredList = []
+    for (let key of keys) {
+      filteredList.push.apply(filteredList, obj[key])
+    }
+    return filteredList
+  } else {
+    return data
   }
-  return filteredList
 }
 
  const applyFilter = function (filter, data) {
@@ -67,6 +72,7 @@ const applyOptions = function (filter, data) {
 
  const applyFilters = function (filters, data) {
    // TODO sort the filters for the most optimal filtering options first...
+   debugger
    for (let f of filters) {
      data = applyFilter(f, data)
    }
