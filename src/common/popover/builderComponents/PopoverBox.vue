@@ -1,9 +1,9 @@
 <template>
-  <div class="popover-box" :class="selectorClass" :style="position">
+  <div class="popover-box" :class="selectorClass" :style="[position, styles.popover]">
 
     <div class="popover-box__triangle" :class="triangleClass" v-if="triangleFirst" :style="offset"></div>
 
-      <div class="popover-box__content">
+      <div class="popover-box__content" :class="styles.content">
         <slot></slot>
       </div>
 
@@ -15,29 +15,54 @@
 
 <script>
 
-import debounce from 'lodash.debounce'
+import { debounce } from 'lodash'
+import ScrollPanel from '@/components/common/scrollPanel'
+
+const THEME = {
+  WHITE: 'white',
+  BLACK: 'black'
+}
 
 const EDGE_DISTANCE = 10
 const PROP_MAP = {
   top: {
     selectorClass: 'popover-box--selector-top',
-    triangleClass: 'popover-box--triangle-down'
+    triangleClass: {
+      normal: 'popover-box--triangle-down',
+      white: 'popover-box--triangle-down-white',
+      black: 'popover-box--triangle-down-black'
+    }
   },
   bottom: {
     selectorClass: 'popover-box--selector-bottom',
-    triangleClass: 'popover-box--triangle-up'
+    triangleClass: {
+      normal: 'popover-box--triangle-up',
+      white: 'popover-box--triangle-up-white',
+      black: 'popover-box--triangle-up-black'
+    }
   },
   left: {
     selectorClass: 'popover-box--selector-left',
-    triangleClass: 'popover-box--triangle-right'
+    triangleClass: {
+      normal: 'popover-box--triangle-right',
+      white: 'popover-box--triangle-right-white',
+      black: 'popover-box--triangle-right-black'
+    }
   },
   right: {
     selectorClass: 'popover-box--selector-right',
-    triangleClass: 'popover-box--triangle-left'
+    triangleClass: {
+      normal: 'popover-box--triangle-left',
+      white: 'popover-box--triangle-left-white',
+      black: 'popover-box--triangle-left-black'
+    }
   }
 }
 
 export default {
+  components: {
+    ScrollPanel
+  },
   props: {
     direction: {
       type: String,
@@ -45,6 +70,10 @@ export default {
     },
     parent: {
       type: HTMLElement | SVGElement | SVGUseElement
+    },
+    colorTheme: {
+      type: String,
+      default: 'white'
     }
   },
   data () {
@@ -67,7 +96,21 @@ export default {
       return ['bottom', 'right'].indexOf(this.direction) > -1
     },
     triangleClass () {
-      return PROP_MAP[this.direction].triangleClass
+      let dir = PROP_MAP[this.direction].triangleClass
+      return [dir[this.colorTheme], dir.normal]
+    },
+    styles () {
+      if (this.colorTheme === THEME.WHITE) {
+        return {
+          popover: {'color': 'black'},
+          content: 'popover-box__content-white'
+        }
+      } else {
+        return {
+          popover: {'color': 'white'},
+          content: 'popover-box__content-black'
+        }
+      }
     }
   },
   methods: {
@@ -108,7 +151,6 @@ export default {
 
       const windowWidth = window.innerWidth
       const windowHeight = window.innerHeight
-
       if (direction === 'top' || direction === 'bottom') {
         const selfLeft = position.left
         const selfRight = position.left + this.$el.clientWidth
@@ -173,7 +215,6 @@ export default {
   z-index: $z-zeus;
   transition: opacity .12s $global-easing;
   backface-visibility: hidden;
-  color: white;
   opacity: 0;
   text-align: left;
   overflow: hidden;
@@ -192,12 +233,29 @@ export default {
     max-height: rem(200);
     overflow-y: auto;
     padding: rem(15);
-    background: black;
     border-radius: rem(6);
+
+    &::-webkit-scrollbar {
+      width: rem(6);
+      border-radius: 0 rem(6) rem(6) 0;
+    }
+  }
+
+  &__content-black {
+    background: black;
+    &::-webkit-scrollbar {
+      background: black;
+    }
+  }
+
+  &__content-white {
+    background: white;
+    &::-webkit-scrollbar {
+      background: white;
+    }
   }
 
   &__content::-webkit-scrollbar {
-    background: black;
     width: rem(6);
     border-radius: 0 rem(6) rem(6) 0;
   }
@@ -209,46 +267,17 @@ export default {
 
   &__triangle {
     position: relative;
+    line-height: 0;
+    width: 0;
+    height: 0;
+    margin: auto;
+    border-style: solid;
   }
 
   &--selector-top {
   }
 
-  &--triangle-down {
-    width: 0;
-    height: 0;
-    border-style: solid;
-    margin: auto;
-    border-width: rem(7) rem(7) 0 rem(7);
-    border-color: black transparent transparent transparent;
-    line-height: 0;
-  }
-
   &--selector-bottom {
-  }
-
-  &--triangle-up {
-    width: 0;
-    height: 0;
-    border-style: solid;
-    margin: auto;
-    border-width: 0 rem(7) rem(7) rem(7);
-    border-color: transparent transparent black transparent;
-    line-height: 0;
-  }
-
-  &--selector-left {
-    display: flex;
-    align-items: center;
-  }
-
-  &--triangle-right {
-    width: 0;
-    height: 0;
-    border-style: solid;
-    border-width: rem(7) 0 rem(7) rem(7);
-    border-color: transparent transparent transparent black;
-    line-height: 0;
   }
 
   &--selector-right {
@@ -256,15 +285,50 @@ export default {
     align-items: center;
   }
 
-  &--triangle-left {
-    width: 0;
-    height: 0;
-    border-style: solid;
-    border-width: rem(7) rem(7) rem(7) 0;
-    border-color: transparent black transparent transparent;
-    line-height: 0;
+  &--selector-left {
+    display: flex;
+    align-items: center;
   }
 
+  &--triangle-down {
+    border-width: rem(7) rem(7) 0 rem(7);
+    &-black {
+      border-color: black transparent transparent transparent;
+    }
+    &-white {
+      border-color: white transparent transparent transparent;
+    }
+  }
+
+  &--triangle-up {
+    border-width: 0 rem(7) rem(7) rem(7);
+    &-black {
+      border-color: transparent transparent black transparent;
+    }
+    &-white {
+      border-color: transparent transparent white transparent;
+    }
+  }
+
+  &--triangle-right {
+    border-width: rem(7) 0 rem(7) rem(7);
+    &-black {
+      border-color: transparent transparent transparent black;
+    }
+    &-white {
+      border-color: transparent transparent transparent white;
+    }
+  }
+
+  &--triangle-left {
+    border-width: rem(7) rem(7) rem(7) 0;
+    &-black {
+      border-color: transparent black transparent transparent;
+    }
+    &-white {
+      border-color: transparent white transparent transparent;
+    }
+  }
 }
 
 </style>
