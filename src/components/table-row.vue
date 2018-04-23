@@ -4,7 +4,7 @@
         ]" :style="getRowStyle()" @mouseenter="handleRowHover" @mouseleave="handleRowLeave">
             <template v-if="isHoveredAndHasHovered">
                 <row-hovered-section :nameStyle="overlayNameStyle" :overlayStyle="overlayStyle" >
-                    <component v-bind:is="hoverOverlayComponent"/>
+                    <component v-bind:is="hoverOverlayComponent" :row="row"/>
                 </row-hovered-section>
             </template>
             <template v-else>

@@ -25,7 +25,7 @@
                     ]" 
                     :style="{width: !isContainerScroll ? contentWidth + 'px' : '100%'}">
                         <table-col-group :columns="columns"></table-col-group>
-                        <table-header :columns="columns" :sort="sort"></table-header>
+                        <table-header :columns="columns" :sort="sort" ref="headers"></table-header>
                     </div>
                 </div>
 
@@ -40,8 +40,8 @@
                     ]" 
                     ref="content" 
                     :style="{width: !isContainerScroll ? contentWidth + 'px' : '100%', marginTop: contentMarginTop + 'px'}">
-                        <table-col-group :columns="columns" v-if="data && data.length > 0"></table-col-group>
-                        <div class="v2-table__table-tbody" v-if="data && data.length > 0">
+                        <table-col-group :columns="columns" v-if="displayData && displayData.length > 0"></table-col-group>
+                        <div class="v2-table__table-tbody" v-if="displayData && displayData.length > 0">
                                 <table-row 
                                     v-for="(row, index) in rows"
                                     :key="index" 
@@ -54,7 +54,7 @@
 
                         <!-- Empty data -->
                         <div class="v2-table__empty-data" 
-                            v-if="!data || !data.length" 
+                            v-if="!displayData || !displayData.length" 
                             :style="{width: contentWidth + 'px', minHeight: bodyHeight <= VOEWPORT_MIN_HEIGHT ? '175px' : bodyHeight + 'px'}">
                             <slot name="empty">
                                 <div class="v2-table__empty-default">
@@ -68,7 +68,7 @@
                 
                 <!-- footer -->
                 <div class="v2-table__footer-wrapper" ref="footer" :style="{width: isContainerScroll ? contentWidth + 'px' : '100%'}">
-                    <table-footer type="normal" :cols="columns" v-if="showSummary" v-show="data && data.length > 0"></table-footer>
+                    <table-footer type="normal" :cols="columns" v-if="showSummary" v-show="displayData && displayData.length > 0"></table-footer>
                 </div>
 
                 <!-- fixed left -->
@@ -94,11 +94,11 @@
                     <div :class="[
                         'v2-table-fixed__body-wrapper',
                         {
-                            'v2-table-fixed__left-empty-border': border && !data.length
+                            'v2-table-fixed__left-empty-border': border && !displayData.length
                         }
                     ]" 
                     ref="leftBody" 
-                    :style="{ height: bodyHeight > VOEWPORT_MIN_HEIGHT ? bodyHeight + 'px' : !data.length ? '175px' : 'auto'}"
+                    :style="{ height: bodyHeight > VOEWPORT_MIN_HEIGHT ? bodyHeight + 'px' : !displayData.length ? '175px' : 'auto'}"
                     >
                         <div :class="[
                             'v2-table__body',
@@ -123,7 +123,7 @@
 
                     <!-- footer -->
                     <div class="v2-table-fixed__footer-wrapper">
-                        <table-footer type="left" :cols="leftColumns" v-if="showSummary" v-show="data && data.length > 0"></table-footer>
+                        <table-footer type="left" :cols="leftColumns" v-if="showSummary" v-show="displayData && displayData.length > 0"></table-footer>
                     </div>
                 </div>
 
@@ -150,11 +150,11 @@
                     <div :class="[
                         'v2-table-fixed__body-wrapper', 
                         {
-                            'v2-table-fixed__right-empty-border': border && !data.length
+                            'v2-table-fixed__right-empty-border': border && !displayData.length
                         }
                     ]" 
                     ref="rightBody" 
-                    :style="{ height: bodyHeight > VOEWPORT_MIN_HEIGHT ? bodyHeight + 'px' : !data.length ? '175px' : 'auto'}"
+                    :style="{ height: bodyHeight > VOEWPORT_MIN_HEIGHT ? bodyHeight + 'px' : !displayData.length ? '175px' : 'auto'}"
                     >
                         <div :class="[
                             'v2-table__body',
@@ -178,7 +178,7 @@
 
                     <!-- footer -->
                     <div class="v2-table-fixed__footer-wrapper">
-                        <table-footer type="right" :cols="rightColumns" v-if="showSummary" v-show="data && data.length > 0"></table-footer>
+                        <table-footer type="right" :cols="rightColumns" v-if="showSummary" v-show="displayData && displayData.length > 0"></table-footer>
                     </div>
                 </div>
 
@@ -244,6 +244,7 @@
     import BeautifyScrollbar from 'beautify-scrollbar';
     import findIndex from 'lodash.findindex';
     import Bus from '../bus.js';
+    import {applyFilters} from '../common/filtering'
 
     import TableHeader from './table-header.js';
     import TableColGroup from './table-col-group.vue';
@@ -251,6 +252,7 @@
     import EmptyIcon from './empty-icon.vue';
     import TableFooter from './table-footer.vue';
     import CheckboxList from './checkbox-list.vue';
+    import {createSortFunction} from '../common/sorting'
 
     export default {
         name: 'v2-table',
@@ -260,7 +262,6 @@
                 default: () => [],
                 required: true
             },
-
             defaultSort: {
                 type: Object,
                 default: () => {
@@ -270,27 +271,22 @@
                     };
                 }
             },
-
-            border: {
+            border: {   // Not sure if this should be here
                 type: Boolean,
                 default: false
             },
-
-            stripe: {
+            stripe: {   // Not sure if this should be here
                 type: Boolean,
                 default: false
             },
-
-            loading: {
+            loading: { // not sure if this should be here
                 type: Boolean,
                 default: false
             },
-
-            emptyText: {
+            emptyText: {    // not sure if tyhis should be here
                 type: String,
                 default: 'No Data'
             },
-
             paginationInfo: {
                 type: Object,
                 default: () => {
@@ -302,58 +298,35 @@
                     };
                 }
             },
-
-            currentPage: {
-                type: Number,
-                default: 1
-            },
-
-            total: {
+            total: {    // should probably reconsider how this is computed
                 type: Number,
                 default: 0
             },
-
             rowHeight: {
                 type: [Number, String],
                 default: 40
             },
             // column header height
-            colHeight: {
+            colHeight: {    // Isnt this the same as rowHeight.....
                 type: [Number, String],
                 default: 40
             },
-
-            shownPagination: {
+            shownPagination: {  // should not have a boolean for pagination.... Not sure...
                 type: Boolean,
                 default: false
             },
-
-            height: {
+            height: {   // Another Height thing... so much out of context, assuming this is the height of the table
                 type: [Number, String],
                 default: 'auto'
             },
-
-            // updatedSelection: {
-            //     // whether updated selection row when data is changed.
-            //     type: Boolean,
-            //     default: false
-            // },
-
-            // uniqueField: {
-            //     type: String,
-            //     default: ''
-            // },
-
-            showSummary: {
+            showSummary: {  // All the Summary stuff should be in its own class/object
                 type: Boolean,
                 default: false
             },
-
             sumText: {
                 type: String,
                 default: 'Sum'
             },
-
             summaryMethod: Function,
             rowClassName: [String, Function],
             lazyLoad: {
@@ -364,7 +337,8 @@
             windowData: {
                 type: Boolean,
                 default: false
-            }
+            },
+            externalFiltering: Function
         },
 
         provide () {
@@ -386,6 +360,8 @@
                 rightColumns: [],
                 selectionColumn: null,
 
+                displayData: [],
+                __sortingFunc: (d) => d,
                 // row select status
                 selectedIndex: [],
                 isAll: false,
@@ -448,7 +424,7 @@
                 return Math.ceil(this.bodyHeight / this.rh) * this.rh;
             },
             heightOfAllData () {
-                return Math.ceil(this.data.length * this.rh);
+                return Math.ceil(this.displayData.length * this.rh);
             },
             heightOfScrollingArea () {
                 return this.isMetLazyLoad || this.windowData ? this.heightOfAllData : this.$refs.content.scrollHeight
@@ -460,26 +436,29 @@
                 deep: true,
                 immediate: true,
                 handler (val) {
-                    this.initRows()
-                    // TODO implement for the scrollbar update...
-                    // if (this.isMetLazyLoad) {
-                    //     this.initRenderRows();
-                    //     if (this.scrollbar) {
-                    //         this.updateScrollbar();
-                    //     }
-                    // } else {
-                    //     this.rows = [].concat(val);
-                    // }
+                    this.displayData = val
+                }
+            },
+            displayData (val) {
+                this.initRows()
+                // TODO implement for the scrollbar update...
+                // if (this.isMetLazyLoad) {
+                //     this.initRenderRows();
+                //     if (this.scrollbar) {
+                //         this.updateScrollbar();
+                //     }
+                // } else {
+                //     this.rows = [].concat(val);
+                // }
 
-                    // if (this.updatedSelection && this.selectedIndex.length > 0) {
-                    //     this.emitSelectChange();
-                    //     return;
-                    // } 
+                // if (this.updatedSelection && this.selectedIndex.length > 0) {
+                //     this.emitSelectChange();
+                //     return;
+                // } 
 
-                    if (this.selectedIndex.length > 0) {
-                        // reset selection status.
-                        this.resetSelection();
-                    }
+                if (this.selectedIndex.length > 0) {
+                    // reset selection status.
+                    this.resetSelection();
                 }
             },
 
@@ -554,18 +533,28 @@
                 if (this.sort.prop === prop) {
                     order = this.sort.order === 'descending' ? 'ascending' : 'descending';
                 }
-
                 this.sort = Object.assign({}, {
                     prop: prop,
                     order: order
                 });
             },
-
-            resetDataOrder (prop, order) {
-                // reset data order
-                this.$emit('sort-change', { prop, order });
+            filter () {
+                let data = this.data
+                let filters = this.$refs.headers.getFilters()
+                data = applyFilters(filters, data)
+                if (this.externalFiltering) {
+                    data = this.externalFiltering(data)
+                }
+                this.displayData = data
+                this.sortDisplayData()
             },
-
+            resetDataOrder (prop, order, type) {
+                this.__sortingFunc = createSortFunction(prop, order, type)
+                this.sortDisplayData()
+            },
+            sortDisplayData () {
+                this.displayData = [].concat(this.displayData.sort(this.__sortingFunc))
+            },
             changeCurPage (e) {
                 let page = e.target.dataset ? e.target.dataset.page : e.target.getAttribute('data-page');
 
@@ -698,7 +687,7 @@
                 const rows = [];
                 // if (this.uniqueField) {
                 //     this.selectedIndex.forEach(item => {
-                //         const r = this.data.filter(d => d[this.uniqueField] === item);
+                //         const r = this.displayData.filter(d => d[this.uniqueField] === item);
                 //         rows = [].concat(...rows, ...r);
                 //     });
                 // } else {
@@ -706,7 +695,7 @@
                 // }
                 // row-index
                 this.selectedIndex.forEach(item => {
-                    rows.push(this.data[item]);
+                    rows.push(this.displayData[item]);
                 });
 
                 this.$emit('select-change', rows);
@@ -720,7 +709,7 @@
                     this.selectedIndex.splice(delIndex, 1);
                 }
             
-                this.isAll = this.selectedIndex.length === this.data.length;
+                this.isAll = this.selectedIndex.length === this.displayData.length;
                 this.isIndeterminate = this.selectedIndex.length > 0 && !this.isAll;
                 this.$nextTick(() => {
                     this.emitSelectChange();
@@ -729,9 +718,9 @@
 
             getAllSelectedRows () {
                 if (!this.uniqueField) {
-                    return Array.from(Array(this.data.length).keys());
+                    return Array.from(Array(this.displayData.length).keys());
                 }
-                return this.data.map(item => item[this.uniqueField]);
+                return this.displayData.map(item => item[this.uniqueField]);
             },
 
             handleRowSelectAll (isChecked) {
@@ -744,14 +733,14 @@
             },
 
             initRows () {
-                if (this.data.length) {
+                if (this.displayData.length) {
                     if (this.isMetLazyLoad) {
                         this.setRenderedRows();
                     } else if (this.windowData) {
                         this.setRenderedRowsBasedOffWindow()
                     }
                     else {
-                        this.rows = [].concat(this.data);
+                        this.rows = [].concat(this.displayData);
                     }
                 }
             },
@@ -776,7 +765,7 @@
                 // TODO not sure if rh is up to date, need to make sure if it is the value of the actual height
                 debugger;
                 let startingRowLength = this.rows.length;
-                const maxRowLength = this.data.length;
+                const maxRowLength = this.displayData.length;
                 const showingAllData = startingRowLength === maxRowLength;
                 if (showingAllData) {
                     return
@@ -811,7 +800,7 @@
                     maxAmountToAdd = startingRowLength + amountToAdd;
                 }
                 for (let i = startingRowLength; i < maxRowLength && i < maxAmountToAdd; i++) {
-                    this.rows.push(Object.assign({}, this.data[i], {
+                    this.rows.push(Object.assign({}, this.displayData[i], {
                         __index: i
                     }));
                 }
@@ -822,8 +811,8 @@
                 const from = Math.floor(this.scrollTop / this.rh); 
                 const to = Math.ceil((this.scrollTop + this.tbodyHeight) / this.rh);
                 for (let i = from; i < to; i++) {
-                    if (typeof this.data[i] !== 'undefined') {
-                        list.push(Object.assign({}, this.data[i], {
+                    if (typeof this.displayData[i] !== 'undefined') {
+                        list.push(Object.assign({}, this.displayData[i], {
                             __index: i
                         }));
                     }
@@ -911,3 +900,15 @@
         }
     };
 </script>
+
+<style>
+.filter-svg {
+    font-size: 1.2em;
+    overflow: visible;
+    width: 1em;
+    display: inline-block;
+    height: 1em;
+    vertical-align: -.125em;
+    margin-left: 10px!important;
+}
+</style>

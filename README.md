@@ -152,9 +152,21 @@ npm run dev
 
 ##TODO
 * need to add in information about the styling that is optional
+* need to change the css selector for selecting the odd and even rows css styles. Look in table-row
+* need to get rid of the 3 types of Header => Rows => footer Options,  there should only be 1 component that
+  * some how manages this for the table....
 * row_hover_overlay__overLayPortion
 * row_hover_overlay__background
-* need to change the css selector for selecting the odd and even rows css styles. Look in table-row
+* need to see if the prop attribute of table-column is used anywhere else...
+* need to see if the type attribute of table-column is used anywhere else and is useful for the application...
+* filter-svg css class is in table.vue put it somewhere else
+##CHANGEAS
+* added in the overlay
+* got rid of the $emit('sort-change') it is better to keep it encapsulated
+* getting rid of the type prop foir the table-column
+* to sort now, you must have sortable and type,  check in table-header
+* repalce data with displayData,  I am using displayData because we handle filtering and sorting internally
+* column type is String by default
 
 ## Thanks
 
