@@ -78,7 +78,8 @@ export default {
                         direction: 'right',
                         list: col.filterable.options,
                         selectedOptions: Object.keys(col.__filter.values),
-                        parent: e.currentTarget
+                        parent: e.currentTarget,
+                        colorTheme: 'black'
                     })
                     popover.$on('select', (value) => {
                         // TODO need to think about the ways a filter should be created

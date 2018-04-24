@@ -73,7 +73,7 @@ export default {
     },
     colorTheme: {
       type: String,
-      default: 'white'
+      default: 'black'
     }
   },
   data () {
