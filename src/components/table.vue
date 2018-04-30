@@ -1,239 +1,105 @@
 <template>
-    <div :class="[
-        'v2-table',
-        {
-            'v2-table__striped': stripe
-        }
-    ]" ref="table">
-        
-        <div class="v2-table__table-wrapper">
-            <div class="v2-table__table-container" ref="container">
-                <!-- 解耦 checkbox 和 table 在DOM结构上的耦合-->
-                <checkboxList v-if="selectionColumn" 
-                    :column="selectionColumn" 
-                    :left="scrollLeft"
-                    :top="scrollTop">
-                </checkboxList>
-                <!-- header -->
-                <div class="v2-table__header-wrapper" ref="header" :style="{width: isContainerScroll ? contentWidth + 'px' : '100%'}">
-                    <div :class="[
-                        'v2-table__header',
-                        {
-                            'v2-table__border': border,
-                            'v2-table__header-border': border
-                        }
-                    ]" 
-                    :style="{width: !isContainerScroll ? contentWidth + 'px' : '100%'}">
-                        <table-col-group :columns="columns"></table-col-group>
-                        <table-header :columns="columns" :sort="sort" ref="headers"></table-header>
-                    </div>
-                </div>
+    <!--
+        SLOTS:
+            tableHeader - this is a component that is above the table headers.
+            empty - when the data is empty.
+            loading - when the user will be waiting for the component to be loaded.
 
-                <!-- body -->
-                <div class="v2-table__body-wrapper" ref="body" :style="{width: isContainerScroll ? contentWidth + 'px' : '100%', height: bodyHeight > VOEWPORT_MIN_HEIGHT ? bodyHeight + 'px' : 'auto'}">
-                    <div :class="[
-                        'v2-table__body',
-                        {
-                            'v2-table__border': border,
-                            'v2-table__body-border': border
-                        }
-                    ]" 
-                    ref="content" 
-                    :style="{width: !isContainerScroll ? contentWidth + 'px' : '100%', marginTop: contentMarginTop + 'px'}">
-                        <table-col-group :columns="columns" v-if="displayData && displayData.length > 0"></table-col-group>
-                        <div class="v2-table__table-tbody" v-if="displayData && displayData.length > 0">
-                                <table-row 
-                                    v-for="(row, index) in rows"
-                                    :key="index" 
-                                    :row="row"
-                                    :rowIndex="index"
-                                    :columns="columns"
-                                    :hoverOverlayComponent="hoverOverlayComponent">
-                                </table-row>
-                        </div>
-
-                        <!-- Empty data -->
-                        <div class="v2-table__empty-data" 
-                            v-if="!displayData || !displayData.length" 
-                            :style="{width: contentWidth + 'px', minHeight: bodyHeight <= VOEWPORT_MIN_HEIGHT ? '175px' : bodyHeight + 'px'}">
-                            <slot name="empty">
-                                <div class="v2-table__empty-default">
-                                    <empty-icon></empty-icon>
-                                    <span class="v2-table__empty-text" v-text="emptyText"></span>
-                                </div>
-                            </slot>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- footer -->
-                <div class="v2-table__footer-wrapper" ref="footer" :style="{width: isContainerScroll ? contentWidth + 'px' : '100%'}">
-                    <table-footer type="normal" :cols="columns" v-if="showSummary" v-show="displayData && displayData.length > 0"></table-footer>
-                </div>
-
-                <!-- fixed left -->
-                <div :class="[
-                    'v2-table-fixed',
-                    'v2-table__fixed-left'
-                ]" v-if="leftColumns.length > 0" :style="{width: leftContainerWidth + 'px', marginLeft: selectionColumn ? selectionColumn.width + 'px' : 0}">
-                    <!-- header -->
-                    <div class="v2-table-fixed__header-wrapper">
-                        <div :class="[
-                            'v2-table__header',
-                            {
-                                'v2-table__border': border,
-                                'v2-table__header-border': border
-                            }
-                        ]">
-                            <table-col-group :columns="leftColumns"></table-col-group>
-                            <table-header :columns="leftColumns" :sort="sort"></table-header>
-                        </div>
-                    </div>
-
-                    <!-- body -->
-                    <div :class="[
-                        'v2-table-fixed__body-wrapper',
-                        {
-                            'v2-table-fixed__left-empty-border': border && !displayData.length
-                        }
-                    ]" 
-                    ref="leftBody" 
-                    :style="{ height: bodyHeight > VOEWPORT_MIN_HEIGHT ? bodyHeight + 'px' : !displayData.length ? '175px' : 'auto'}"
-                    >
-                        <div :class="[
-                            'v2-table__body',
-                            {
-                                'v2-table__border': border,
-                                'v2-table__body-border': border
-                            }
-                        ]" :style="{marginTop: contentMarginTop + 'px'}">
-                            <table-col-group :columns="leftColumns"></table-col-group>
-                            <div class="v2-table__table-tbody">
-                                <template v-for="(row, index) in rows">
-                                    <table-row 
-                                        :key="index" 
-                                        :row="row"
-                                        :rowIndex="index" 
-                                        :columns="leftColumns">
-                                    </table-row>
-                                </template>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- footer -->
-                    <div class="v2-table-fixed__footer-wrapper">
-                        <table-footer type="left" :cols="leftColumns" v-if="showSummary" v-show="displayData && displayData.length > 0"></table-footer>
-                    </div>
-                </div>
-
-                <!-- fixed right -->
-                <div :class="[
-                    'v2-table-fixed',
-                    'v2-table__fixed-right'
-                ]" v-if="rightColumns.length > 0" :style="{width: (rightContainerWidth + 2) + 'px'}">
-                    <!-- header -->
-                    <div class="v2-table-fixed__header-wrapper">
-                        <div :class="[
-                            'v2-table__header',
-                            {
-                                'v2-table__border': border,
-                                'v2-table__header-border': border
-                            }
-                        ]">
-                            <table-col-group :columns="rightColumns"></table-col-group>
-                            <table-header :columns="rightColumns" :sort="sort"></table-header>
-                        </div>
-                    </div>
-
-                    <!-- body -->
-                    <div :class="[
-                        'v2-table-fixed__body-wrapper', 
-                        {
-                            'v2-table-fixed__right-empty-border': border && !displayData.length
-                        }
-                    ]" 
-                    ref="rightBody" 
-                    :style="{ height: bodyHeight > VOEWPORT_MIN_HEIGHT ? bodyHeight + 'px' : !displayData.length ? '175px' : 'auto'}"
-                    >
-                        <div :class="[
-                            'v2-table__body',
-                            {
-                                'v2-table__border': border,
-                                'v2-table__body-border': border
-                            }
-                        ]" :style="{marginTop: contentMarginTop + 'px'}">
-                            <table-col-group :columns="rightColumns"></table-col-group>
-                            <div class="v2-table__table-tbody">
-                                <table-row 
-                                    v-for="(row, index) in rows" 
-                                    :key="index" 
-                                    :row="row"
-                                    :rowIndex="index" 
-                                    :columns="rightColumns">
-                                </table-row>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- footer -->
-                    <div class="v2-table-fixed__footer-wrapper">
-                        <table-footer type="right" :cols="rightColumns" v-if="showSummary" v-show="displayData && displayData.length > 0"></table-footer>
-                    </div>
-                </div>
-
-                <!-- Table loading -->
-                <div class="v2-table__data-loading" v-if="loading">
-                    <slot name="loading">
-                        <div class="v2-table__loading-spinner">
-                            <svg viewBox="25 25 50 50" class="circular"><circle cx="50" cy="50" r="20" fill="none" class="path"></circle></svg>
-                        </div>
-                    </slot>
-                </div>
-            </div>
-            <!-- TODO insert the pagination here -->
-            <div class="v2-table__pagination-box" v-if="shownPagination" v-show="total > 0">
-                <div class="pagination-text-info" v-if="paginationInfo.text" v-html="paginationInfo.text"></div>
-                <div class="v2-table__pagination" @click="changeCurPage">
-                    <span 
-                        :class="[
-                            'page prev-page',
-                            {
-                                'disabled': curPage === 1
-                            }
-                        ]"  
-                        data-page="prev"
-                    >
-                        {{paginationInfo.prevPageText || 'Prev'}}
-                    </span>
-                    <ul>
-                        <li v-for="(item, index) in renderPages" 
-                            :key="index" 
-                            :data-page="item.page"
-                            :class="[
-                                'page',
-                                {
-                                    'cur-page': curPage === item.page
-                                }
-                            ]"
-                        >
-                            {{item.text}}
-                        </li>
-                    </ul>
-                    <span 
-                        :class="[
-                            'page next-page',
-                            {
-                                'disabled': curPage === totalPage
-                            }
-                        ]" 
-                        data-page="next"
-                    >
-                        {{paginationInfo.nextPageText || 'Next'}}
-                    </span>
-                </div>
-            </div>
+        COMPONENTS:
+            hoverOverlayComponent - this is the Hover Overlay Componet that appears when you hover over a row.
+    -->
+    <div class="v2-table-container">
+        <!-- TODO need to complete the classes and styleing -->
+        <div class="v2-table__header-dashboard">
+            <slot name='tableHeader'></slot>
         </div>
+        <template v-if="isEmpty">
+            <!-- Empty data -->
+            <template v-if="isEmpty">
+                <slot name="empty">
+                    <div class="v2-table__empty-default">
+                        <empty-icon></empty-icon>
+                        <span class="v2-table__empty-text" v-text="emptyText"></span>
+                    </div>
+                </slot>
+            </template>
+        </template>
+        <template v-else>
+            <div>
+                <div :class="[
+                    'v2-table',
+                    {
+                        'v2-table__striped': stripe
+                    }
+                ]" ref="table">
+                    
+                    <div class="v2-table__table-wrapper">
+                        <div class="v2-table__table-container" ref="container">
+                            <!-- 解耦 checkbox 和 table 在DOM结构上的耦合-->
+                            <!-- <checkboxList v-if="selectionColumn" 
+                                :column="selectionColumn" 
+                                :left="scrollLeft"
+                                :top="scrollTop">
+                            </checkboxList> -->
+                            <!-- header -->
+                            <div class="v2-table__header-wrapper" ref="header" :style="{width: isContainerScroll ? contentWidth + 'px' : '100%'}">
+                                <div :class="[
+                                    'v2-table__header',
+                                    {
+                                        'v2-table__border': border,
+                                        'v2-table__header-border': border
+                                    }
+                                ]" 
+                                :style="{width: !isContainerScroll ? contentWidth + 'px' : '100%'}">
+                                    <table-col-group :columns="columns"></table-col-group>
+                                    <table-header :columns="columns" :sort="sort" ref="headers"></table-header>
+                                </div>
+                            </div>
+
+                            <!-- body -->
+                            <div class="v2-table__body-wrapper" ref="body" :style="{width: isContainerScroll ? contentWidth + 'px' : '100%', height: bodyHeight > VOEWPORT_MIN_HEIGHT ? bodyHeight + 'px' : 'auto'}">
+                                <div :class="[
+                                    'v2-table__body',
+                                    {
+                                        'v2-table__border': border,
+                                        'v2-table__body-border': border
+                                    }
+                                ]" 
+                                ref="content" 
+                                :style="{width: !isContainerScroll ? contentWidth + 'px' : '100%', marginTop: contentMarginTop + 'px'}">
+                                    <table-col-group :columns="columns" v-if="displayData && displayData.length > 0"></table-col-group>
+                                    <div class="v2-table__table-tbody" v-if="displayData && displayData.length > 0">
+                                            <table-row 
+                                                v-for="(row, index) in rows"
+                                                :key="index" 
+                                                :row="row"
+                                                :rowIndex="index"
+                                                :columns="columns"
+                                                :hoverOverlayComponent="hoverOverlayComponent">
+                                            </table-row>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- footer -->
+                            <div class="v2-table__footer-wrapper" ref="footer" :style="{width: isContainerScroll ? contentWidth + 'px' : '100%'}">
+                                <table-footer type="normal" :cols="columns" v-if="showSummary" v-show="displayData && displayData.length > 0"></table-footer>
+                            </div>
+
+                            <!-- Table loading -->
+                            <div class="v2-table__data-loading" v-if="loading">
+                                <slot name="loading">
+                                    <div class="v2-table__loading-spinner">
+                                        <svg viewBox="25 25 50 50" class="circular"><circle cx="50" cy="50" r="20" fill="none" class="path"></circle></svg>
+                                    </div>
+                                </slot>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+        <!-- Have to keep this in to have the rows show up -->
         <div v-show="false">
             <slot></slot>
         </div>
@@ -401,6 +267,9 @@
         },
 
         computed: {
+            isEmpty () {
+                return !this.displayData || !this.displayData.length;
+            },
             contentWidth () {
                 let bodyMinWidth = 0;
                 this.columns.forEach(column => {
@@ -873,12 +742,26 @@
             }
 
             this.$nextTick(() => {
-                this.container = this.isContainerScroll ? this.$refs.container : this.$refs.body;
-                this.scrollbar = new BeautifyScrollbar(this.container, {
-                    contentWidth: this.$refs.content.scrollWidth,
-                    contentHeight: this.heightOfScrollingArea
-                });
-                this.container.addEventListener('bs-update-scroll-value', this.updateHeaderWrapScrollLeft, false);
+                let fun = () => {
+                    this.container = this.isContainerScroll ? this.$refs.container : this.$refs.body;
+                    this.scrollbar = new BeautifyScrollbar(this.container, {
+                        contentWidth: this.$refs.content.scrollWidth,
+                        contentHeight: this.heightOfScrollingArea
+                    });
+                    this.container.addEventListener('bs-update-scroll-value', this.updateHeaderWrapScrollLeft, false);
+                }
+                let done = false
+                let genFunc = () => {
+                    if (!done) {
+                        if (this.$refs.container && this.$refs.body) {
+                            fun()
+                            done = true
+                        } else {
+                            setTimeout(genFunc, 250)
+                        }
+                    }
+                }
+                genFunc()
             });
         },
 

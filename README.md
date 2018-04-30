@@ -167,6 +167,8 @@ npm run dev
 * to sort now, you must have sortable and type,  check in table-header
 * repalce data with displayData,  I am using displayData because we handle filtering and sorting internally
 * column type is String by default
+* added in the slot tableHeader
+* for the class/style changes on the tableHeader, it will be deffinied by v2-table__header-dashboard
 
 ## Thanks
 
