@@ -14,10 +14,18 @@
                 type: [Number, String],
                 default: 90
             },
-            type: String,
+            // CHANGED to Function...
+            type: {
+                type: Function,
+                default: String
+            },   // I think this is going to be depricated, until I can find a use case
             sortable: {
                 type: Boolean,
                 default: false
+            },
+            filterable: {
+                type: Object,
+                default: null
             },
             fixed: {
                 type: String,

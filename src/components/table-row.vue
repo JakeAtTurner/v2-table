@@ -2,9 +2,9 @@
         <div role="row" id="roleIndex" ref="rowIndex" :class="[
             getRowClass()
         ]" :style="getRowStyle()" @mouseenter="handleRowHover" @mouseleave="handleRowLeave">
-            <template v-if="isHovered">
+            <template v-if="isHoveredAndHasHovered">
                 <row-hovered-section :nameStyle="overlayNameStyle" :overlayStyle="overlayStyle" >
-                    <slot name="hoverOnRow"></slot>
+                    <component v-bind:is="hoverOverlayComponent" :row="row"/>
                 </row-hovered-section>
             </template>
             <template v-else>
@@ -37,7 +37,8 @@
                 default: () => {}
             },
 
-            rowIndex: [String, Number]
+            rowIndex: [String, Number],
+            hoverOverlayComponent: String
         },
         inject: ['table'],
         data () {
@@ -46,7 +47,7 @@
                 nameColumWidth: 0,
                 overlayWidth: 0,
                 isHovered: false
-            }
+            };
         },
         methods: {
             getRowClass () {
@@ -71,7 +72,6 @@
                 if (!isNaN(parseInt(this.table.rowHeight, 10))) {
                     style.height = parseInt(this.table.rowHeight, 10) + 'px';
                 }
-
                 return style;
             },
 
@@ -84,41 +84,44 @@
             },
             resize () {
                 setTimeout(() => {
-                    this.rowHeight = this.$el.clientHeight
-                    let columns = this.$el.getElementsByClassName('v2-table__cell')
+                    this.rowHeight = this.$el.clientHeight;
+                    const columns = this.$el.getElementsByClassName('v2-table__cell');
                     if (columns.length > 0) {
-                        this.nameColumWidth = columns[0].clientWidth
-                        let totalOverlayWidth = 0
+                        this.nameColumWidth = columns[0].clientWidth;
+                        let totalOverlayWidth = 0;
                         for (let i = 1; i < columns.length; i++) {
-                            totalOverlayWidth += columns[i].clientWidth
+                            totalOverlayWidth += columns[i].clientWidth;
                         }
-                        this.overlayWidth = totalOverlayWidth
+                        this.overlayWidth = totalOverlayWidth;
                     }
-                }, 10)
+                }, 10);
             }
         },
         computed: {
             overlayNameStyle () {
-                let width = this.nameColumWidth
+                const width = this.nameColumWidth;
                 return { 
                     width: `${width}px !important`, 
                     float: 'left',
                     height: this.rowHeight + 'px'
-                }
+                };
             },
             overlayStyle () {
                 return {
                     height: this.rowHeight + 'px',
                     width: this.overlayWidth + 'px'
-                }
+                };
+            },
+            isHoveredAndHasHovered () {
+                return this.hoverOverlayComponent && this.isHovered;
             }
         },
         mounted () {
-            this.resize()
-            window.addEventListener('resize', this.resize)
+            this.resize();
+            window.addEventListener('resize', this.resize);
         },
         destroyed () {
-            window.removeEventListener('resize', this.resize)
+            window.removeEventListener('resize', this.resize);
         },
         components: {
             TableCell,
@@ -130,21 +133,12 @@
 <style lang='scss'>
 .row_hover_overlay {
     position: absolute !important;
-    z-index: 9999 !important;
+    z-index: 100 !important;
     width: 100%;
 
     &__overLayPortion {
         float: left;
     }
-}
-
-.table-hover-over-background {
-    position: absolute !important;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1000;
 }
 
 </style>

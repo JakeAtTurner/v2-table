@@ -44,12 +44,12 @@
 
 <script>
 export default {
-  props: { // use v-bind to assign the values associated here..
-    text: String,
-    prevPageText: String,
-    nextPageText: String,
-  }
-}
+    props: { // use v-bind to assign the values associated here..
+        text: String,
+        prevPageText: String,
+        nextPageText: String
+    }
+};
 </script>
 
 <style>
