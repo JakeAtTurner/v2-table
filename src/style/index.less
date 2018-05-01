@@ -38,6 +38,13 @@
     }
 }
 
+.v2-table-container {
+    position: relative;
+    flex: auto;
+    height: 100%;
+    width: 100%;
+}
+
 .v2-table__table-wrapper, .v2-table__table-container {
     width: 100%;
     overflow: hidden;
@@ -158,12 +165,12 @@
     z-index: @z-index-min;
     border: 5px solid transparent;
     &.ascending-caret {
-        border-bottom: 5px solid @border-light-color;
-        top: -3px;
+        border-bottom: 8px solid @border-light-color;
+        top: -7px;
     }
     &.descending-caret {
-        border-top: 5px solid @border-light-color;
-        bottom: -3px;
+        border-top: 8px solid @border-light-color;
+        bottom: -7px;
     }
 }
 

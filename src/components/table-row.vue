@@ -2,9 +2,9 @@
         <div role="row" id="roleIndex" ref="rowIndex" :class="[
             getRowClass()
         ]" :style="getRowStyle()" @mouseenter="handleRowHover" @mouseleave="handleRowLeave">
-            <template v-if="isHovered">
+            <template v-if="isHoveredAndHasHovered">
                 <row-hovered-section :nameStyle="overlayNameStyle" :overlayStyle="overlayStyle" >
-                    <slot name="hoverOnRow"></slot>
+                    <component v-bind:is="hoverOverlayComponent" :row="row"/>
                 </row-hovered-section>
             </template>
             <template v-else>
@@ -37,7 +37,8 @@
                 default: () => {}
             },
 
-            rowIndex: [String, Number]
+            rowIndex: [String, Number],
+            hoverOverlayComponent: String
         },
         inject: ['table'],
         data () {
@@ -111,6 +112,9 @@
                     height: this.rowHeight + 'px',
                     width: this.overlayWidth + 'px'
                 }
+            },
+            isHoveredAndHasHovered () {
+                return this.hoverOverlayComponent && this.isHovered
             }
         },
         mounted () {
@@ -130,21 +134,12 @@
 <style lang='scss'>
 .row_hover_overlay {
     position: absolute !important;
-    z-index: 9999 !important;
+    z-index: 100 !important;
     width: 100%;
 
     &__overLayPortion {
         float: left;
     }
-}
-
-.table-hover-over-background {
-    position: absolute !important;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1000;
 }
 
 </style>

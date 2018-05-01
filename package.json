@@ -39,7 +39,8 @@
   },
   "dependencies": {
     "beautify-scrollbar": "^1.0.5",
-    "lodash.findindex": "^4.6.0"
+    "lodash.findindex": "^4.6.0",
+    "lodash.debounce": "4.0.8"
   },
   "peerDependencies": {
     "vue": ">= 2.5.0"
