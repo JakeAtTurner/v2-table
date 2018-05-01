@@ -303,8 +303,8 @@
                 const columnComponents = this.$slots.default
                     .filter(c => c.tag && c.tag.indexOf('v2-table-column') !== -1 && c.componentInstance)
                     .map(column => column.componentInstance);
+                // console.log(columnComponents)
                 if (columnComponents.length > 0) {
-                    const tags = this.$slots.default.map(c => c.tag)
                     this.setColumns(columnComponents)
                 } else {
                     setTimeout(fun, 50)
@@ -703,23 +703,31 @@
                 return list;
             },
             setColumns (columnComponents) {
-                const currentLabels = new Set(this.columns.map(c => c.label))
-                const newLabels = new Set(columnComponents.map(c => c.label))
+                const currentLabels = this.columns.map(c => c.label)
+                const newLabels = columnComponents.map(c => c.label)
                 let render = false
-                if (currentLabels.size === newLabels.size) {
-                    currentLabels.forEach(function(value) {
-                        newLabels.delete(value)
-                    });
-                    render = newLabels.size > 0
+                const fff = (setOf) => {
+                    const l = []
+                    for (const f of setOf) {
+                        l.push(f)
+                    }
+                    return l
+                };
+                if (currentLabels.length === newLabels.length) {
+                    for (let i in currentLabels) {
+                        if (currentLabels[i] !== newLabels[i]) {
+                            render = true
+                        }
+                    }
                 } else {
                     render = true
                 }
                 if (render) {
+                    // console.log(columnComponents.map(c => c.label))
                     const selectionColumnComponents = this.getColumnComponentsByType(columnComponents, 'selection');
                     const normalColumnComponents = this.getColumnComponentsByType(columnComponents, 'normal');
                     const fixedLeftColumnComponents = this.getColumnComponentsByType(columnComponents, 'left');
                     const fixedRightColumnComponents = this.getColumnComponentsByType(columnComponents, 'right');
-
                     this.columns = [].concat(selectionColumnComponents, fixedLeftColumnComponents, normalColumnComponents, fixedRightColumnComponents);
                     this.leftColumns = fixedLeftColumnComponents.length > 0 ? [].concat(fixedLeftColumnComponents) : [].concat(fixedLeftColumnComponents);
                     this.rightColumns = [].concat(fixedRightColumnComponents);
