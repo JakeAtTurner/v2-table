@@ -27,11 +27,6 @@
     "package.json"
   ],
   "scripts": {
-    "prepush": "npm run ilint -q",
-    "prepublishOnly": "npm run build",
-    "ilint": "npx eslint src/**/*.js src/**/*.vue",
-    "fix": "npx eslint --fix src/**/*.js src/**/*.vue",
-    "commitmsg": "npx commitlint -e",
     "dev": "npx cross-env NODE_ENV=development node ./build/dev-server.js",
     "test": "npx karma start test/karma.conf.js --single-run",
     "build": "rm -rf dist && npx webpack --config ./webpack.build.config.js --hide-modules",
