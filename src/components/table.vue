@@ -299,18 +299,18 @@
         },
         beforeUpdate () {
             const fun = () => {
-                const timeout = () => setTimeout()
+                const timeout = () => setTimeout();
                 const columnComponents = this.$slots.default
                     .filter(c => c.tag && c.tag.indexOf('v2-table-column') !== -1 && c.componentInstance)
                     .map(column => column.componentInstance);
                 // console.log(columnComponents)
                 if (columnComponents.length > 0) {
-                    this.setColumns(columnComponents)
+                    this.setColumns(columnComponents);
                 } else {
-                    setTimeout(fun, 50)
+                    setTimeout(fun, 50);
                 }
-            }
-            fun()
+            };
+            fun();
         },
         watch: {
             data: {
@@ -354,7 +354,7 @@
             },
 
             scrollTop (val) {
-                this.adjustRows()
+                this.adjustRows();
             }
         },
 
@@ -703,24 +703,24 @@
                 return list;
             },
             setColumns (columnComponents) {
-                const currentLabels = this.columns.map(c => c.label)
-                const newLabels = columnComponents.map(c => c.label)
-                let render = false
+                const currentLabels = this.columns.map(c => c.label);
+                const newLabels = columnComponents.map(c => c.label);
+                let render = false;
                 const fff = (setOf) => {
-                    const l = []
+                    const l = [];
                     for (const f of setOf) {
-                        l.push(f)
+                        l.push(f);
                     }
-                    return l
+                    return l;
                 };
                 if (currentLabels.length === newLabels.length) {
-                    for (let i in currentLabels) {
+                    for (const i in currentLabels) {
                         if (currentLabels[i] !== newLabels[i]) {
-                            render = true
+                            render = true;
                         }
                     }
                 } else {
-                    render = true
+                    render = true;
                 }
                 if (render) {
                     // console.log(columnComponents.map(c => c.label))
@@ -753,7 +753,7 @@
             const columnComponents = this.$slots.default
                 .filter(column => column.componentInstance && column.componentInstance.$options.name === 'v2-table-column')
                 .map(column => column.componentInstance);
-            this.setColumns(columnComponents)
+            this.setColumns(columnComponents);
 
             this.initRows();
 

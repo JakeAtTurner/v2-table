@@ -27,17 +27,10 @@
     "package.json"
   ],
   "scripts": {
-<<<<<<< HEAD
-    "prepush": "np, run ilint -q",
-    "prepublishOnly": "npm run build",
-    "ilint": "npx eslint src/**/*.js src/**/*.vue",
-    "fix": "npx eslint src/**/*.js src/**/*.vue",
-=======
     "prepush": "npm run ilint -q",
     "prepublishOnly": "npm run build",
     "ilint": "npx eslint src/**/*.js src/**/*.vue",
-    "fix": "npx eslint --fix src/**/*.js src/**/*.vue",
->>>>>>> a38c37ed0aa597455fb93e81e6cb7dbb91eab81f
+    "fix": "npx eslint src/**/*.js src/**/*.vue",
     "commitmsg": "npx commitlint -e",
     "dev": "npx cross-env NODE_ENV=development node ./build/dev-server.js",
     "test": "npx karma start test/karma.conf.js --single-run",
