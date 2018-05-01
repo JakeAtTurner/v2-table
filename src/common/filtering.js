@@ -29,56 +29,54 @@
  *      true/false if boolean
  * }
  */
-import {getAttribute} from './util'
+import { getAttribute } from './util';
 
 const FILTER_TYPES = {
-  STRING: 'string',
-  NUMERIC: 'numberic',
-  DATES: 'dates',
-  BOOLEAN: 'boolean',
-  OPTIONS: 'options'
-}
+    STRING: 'string',
+    NUMERIC: 'numberic',
+    DATES: 'dates',
+    BOOLEAN: 'boolean',
+    OPTIONS: 'options'
+};
 
 const applyOptions = function (filter, data) {
-  debugger
-  let keys = Object.keys(filter.values)
-  if (keys.length > 0) {
-    let obj = {}
-    let field = filter.field
-    for (let d of data) {
-      let value = getAttribute(d, field)
-      let list = obj[value]
-      if (!list) {
-        list = []
-        obj[value] = list
-      }
-      list.push(d)
+    const keys = Object.keys(filter.values);
+    if (keys.length > 0) {
+        const obj = {};
+        const field = filter.field;
+        for (const d of data) {
+            const value = getAttribute(d, field);
+            let list = obj[value];
+            if (!list) {
+                list = [];
+                obj[value] = list;
+            }
+            list.push(d);
+        }
+        const filteredList = [];
+        for (const key of keys) {
+            filteredList.push.apply(filteredList, obj[key]);
+        }
+        return filteredList;
+    } else {
+        return data;
     }
-    let filteredList = []
-    for (let key of keys) {
-      filteredList.push.apply(filteredList, obj[key])
+};
+
+const applyFilter = function (filter, data) {
+    if (filter.type === FILTER_TYPES.OPTIONS) {
+        return applyOptions(filter, data);
     }
-    return filteredList
-  } else {
-    return data
-  }
-}
+};
 
- const applyFilter = function (filter, data) {
-   if (filter.type === FILTER_TYPES.OPTIONS) {
-     return applyOptions(filter, data)
-   }
- }
+const applyFilters = function (filters, data) {
+    // TODO sort the filters for the most optimal filtering options first...
+    for (const f of filters) {
+        data = applyFilter(f, data);
+    }
+    return data;
+};
 
- const applyFilters = function (filters, data) {
-   // TODO sort the filters for the most optimal filtering options first...
-   debugger
-   for (let f of filters) {
-     data = applyFilter(f, data)
-   }
-   return data
- }
-
- export {
-   applyFilters
- }
+export {
+    applyFilters
+};

@@ -14,7 +14,7 @@
                 type: [Number, String],
                 default: 90
             },
-            //CHANGED to Function...
+            // CHANGED to Function...
             type: {
                 type: Function,
                 default: String

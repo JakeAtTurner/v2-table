@@ -110,7 +110,7 @@
     import BeautifyScrollbar from 'beautify-scrollbar';
     import findIndex from 'lodash.findindex';
     import Bus from '../bus.js';
-    import {applyFilters} from '../common/filtering'
+    import { applyFilters } from '../common/filtering';
 
     import TableHeader from './table-header.js';
     import TableColGroup from './table-col-group.vue';
@@ -118,7 +118,7 @@
     import EmptyIcon from './empty-icon.vue';
     import TableFooter from './table-footer.vue';
     import CheckboxList from './checkbox-list.vue';
-    import {createSortFunction} from '../common/sorting'
+    import { createSortFunction } from '../common/sorting';
 
     export default {
         name: 'v2-table',
@@ -216,9 +216,7 @@
         data () {
             const ch = Number.parseInt(this.height, 10);
             const rh = Number.parseInt(this.rowHeight, 10);
-
-            let voewportMin = 100;
-
+            const voewportMin = 100;
             return {
                 rows: [],   // TODO change the name to displayed rows
                 columns: [],
@@ -249,7 +247,7 @@
                 pageDiff: 2,
 
                 // Windowing
-                increaseWindowHeight: 3000, /**[NUMBER] this is the height that the windowed data increases and decreases by*/
+                increaseWindowHeight: 3000, /** [NUMBER] this is the height that the windowed data increases and decreases by*/
 
                 // for on demand loading
                 VOEWPORT_MIN_HEIGHT: voewportMin,
@@ -286,8 +284,8 @@
                 return this.getFixedContainerWidth(this.rightColumns);
             },
             isMetLazyLoad () {
-                let booleanValue = this.lazyLoad && !this.shownPagination && this.bodyHeight > this.VOEWPORT_MIN_HEIGHT;
-                return booleanValue
+                const booleanValue = this.lazyLoad && !this.shownPagination && this.bodyHeight > this.VOEWPORT_MIN_HEIGHT;
+                return booleanValue;
             },
             tbodyHeight () {
                 return Math.ceil(this.bodyHeight / this.rh) * this.rh;
@@ -296,7 +294,7 @@
                 return Math.ceil(this.displayData.length * this.rh);
             },
             heightOfScrollingArea () {
-                return this.isMetLazyLoad || this.windowData ? this.heightOfAllData : this.$refs.content.scrollHeight
+                return this.isMetLazyLoad || this.windowData ? this.heightOfAllData : this.$refs.content.scrollHeight;
             }
         },
         beforeUpdate () {
@@ -319,11 +317,11 @@
                 deep: true,
                 immediate: true,
                 handler (val) {
-                    this.displayData = val
+                    this.displayData = val;
                 }
             },
             displayData (val) {
-                this.initRows()
+                this.initRows();
                 // TODO implement for the scrollbar update...
                 // if (this.isMetLazyLoad) {
                 //     this.initRenderRows();
@@ -357,9 +355,6 @@
 
             scrollTop (val) {
                 this.adjustRows()
-            },
-            '$slots' () {
-                console.log('CHANGED SLOTS');
             }
         },
 
@@ -425,21 +420,21 @@
                 });
             },
             filter () {
-                let data = this.data
-                let filters = this.$refs.headers.getFilters()
-                data = applyFilters(filters, data)
+                let data = this.data;
+                const filters = this.$refs.headers.getFilters();
+                data = applyFilters(filters, data);
                 if (this.externalFiltering) {
-                    data = this.externalFiltering(data)
+                    data = this.externalFiltering(data);
                 }
-                this.displayData = data
-                this.sortDisplayData()
+                this.displayData = data;
+                this.sortDisplayData();
             },
             resetDataOrder (prop, order, type) {
-                this.__sortingFunc = createSortFunction(prop, order, type)
-                this.sortDisplayData()
+                this.__sortingFunc = createSortFunction(prop, order, type);
+                this.sortDisplayData();
             },
             sortDisplayData () {
-                this.displayData = [].concat(this.displayData.sort(this.__sortingFunc))
+                this.displayData = [].concat(this.displayData.sort(this.__sortingFunc));
             },
             changeCurPage (e) {
                 let page = e.target.dataset ? e.target.dataset.page : e.target.getAttribute('data-page');
@@ -623,9 +618,8 @@
                     if (this.isMetLazyLoad) {
                         this.setRenderedRows();
                     } else if (this.windowData) {
-                        this.setRenderedRowsBasedOffWindow()
-                    }
-                    else {
+                        this.setRenderedRowsBasedOffWindow();
+                    } else {
                         this.rows = [].concat(this.displayData);
                     }
                 }
@@ -644,19 +638,18 @@
             },
             setRenderedRowsBasedOffWindow () {
                 // TODO need to figure out the best way to seperat the row and the new array generated
-                this.getWindowedRenderedRows()
+                this.getWindowedRenderedRows();
             },
 
             getWindowedRenderedRows () {
                 // TODO not sure if rh is up to date, need to make sure if it is the value of the actual height
-                debugger;
                 let startingRowLength = this.rows.length;
                 const maxRowLength = this.displayData.length;
                 const showingAllData = startingRowLength === maxRowLength;
                 if (showingAllData) {
-                    return
+                    return;
                 }
-                let thresholdMark = 0.2;
+                const thresholdMark = 0.2;
                 const seenHeight = this.scrollTop + this.tbodyHeight;
                 const currentMaxHeight = this.rh * startingRowLength;
                 const threshold = 1 + thresholdMark;
@@ -674,15 +667,15 @@
                     maxAmountToAdd = minimumDataLength;
                 } else if (needToDecreaseNumberOfRowsSeen) {
                     // decrease it by 1 increase in Windowed Height
-                    let decreaseAmount = Math.ceil(this.increaseWindowHeight / this.rh);
-                    let startSplice = startingRowLength - decreaseAmount;
-                    let canDecrease = startSplice > minimumDataLength;
+                    const decreaseAmount = Math.ceil(this.increaseWindowHeight / this.rh);
+                    const startSplice = startingRowLength - decreaseAmount;
+                    const canDecrease = startSplice > minimumDataLength;
                     if (canDecrease) {
-                        this.rows = this.rows.splice(0, startSplice)
+                        this.rows = this.rows.splice(0, startSplice);
                     }
-                    return 
+                    return;
                 } else if (isAboveThreshold && !showingAllData) {
-                    let amountToAdd = Math.ceil(this.increaseWindowHeight / this.rh);
+                    const amountToAdd = Math.ceil(this.increaseWindowHeight / this.rh);
                     maxAmountToAdd = startingRowLength + amountToAdd;
                 }
                 for (let i = startingRowLength; i < maxRowLength && i < maxAmountToAdd; i++) {
@@ -754,7 +747,7 @@
                 .map(column => column.componentInstance);
             this.setColumns(columnComponents)
 
-            this.initRows()
+            this.initRows();
 
             // Whether scroll event binding table-container element or table-body element
             if (this.leftColumns.length || this.rightColumns.length || this.bodyHeight > this.VOEWPORT_MIN_HEIGHT) {
@@ -766,26 +759,26 @@
             }
 
             this.$nextTick(() => {
-                let fun = () => {
+                const fun = () => {
                     this.container = this.isContainerScroll ? this.$refs.container : this.$refs.body;
                     this.scrollbar = new BeautifyScrollbar(this.container, {
                         contentWidth: this.$refs.content.scrollWidth,
                         contentHeight: this.heightOfScrollingArea
                     });
                     this.container.addEventListener('bs-update-scroll-value', this.updateHeaderWrapScrollLeft, false);
-                }
-                let done = false
-                let genFunc = () => {
+                };
+                let done = false;
+                const genFunc = () => {
                     if (!done) {
                         if (this.$refs.container && this.$refs.body) {
-                            fun()
-                            done = true
+                            fun();
+                            done = true;
                         } else {
-                            setTimeout(genFunc, 250)
+                            setTimeout(genFunc, 250);
                         }
                     }
-                }
-                genFunc()
+                };
+                genFunc();
             });
         },
 
