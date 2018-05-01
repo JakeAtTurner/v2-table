@@ -16,7 +16,6 @@
 <script>
 
 import { debounce } from 'lodash'
-import ScrollPanel from '@/components/common/scrollPanel'
 
 const THEME = {
   WHITE: 'white',
@@ -60,9 +59,6 @@ const PROP_MAP = {
 }
 
 export default {
-  components: {
-    ScrollPanel
-  },
   props: {
     direction: {
       type: String,
@@ -209,10 +205,11 @@ export default {
 </script>
 
 <style lang="scss">
+$global-easing: cubic-bezier(0.38, 0.46, 0.22, 1.01);
 
 .popover-box {
   position: absolute;
-  z-index: $z-zeus;
+  z-index: 666;
   transition: opacity .12s $global-easing;
   backface-visibility: hidden;
   opacity: 0;

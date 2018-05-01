@@ -20,7 +20,7 @@
 
 <script>
 
-import PopoverBox from './PopoverBox'
+import PopoverBox from './PopoverBox.vue'
 import popoverContainerMixin from './popoverContainerMixin'
 
 export default {
