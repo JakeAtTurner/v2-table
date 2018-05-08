@@ -8,7 +8,7 @@
         COMPONENTS:
             hoverOverlayComponent - this is the Hover Overlay Componet that appears when you hover over a row.
     -->
-    <div class="v2-table-container">
+    <div class="v2-table-container" ref="tableArea">
         <!-- TODO need to complete the classes and styleing -->
         <div class="v2-table__header-dashboard">
             <slot name='tableHeader'></slot>
@@ -57,7 +57,7 @@
                             </div>
 
                             <!-- body -->
-                            <div class="v2-table__body-wrapper" ref="body" :style="{width: isContainerScroll ? contentWidth + 'px' : '100%', height: bodyHeight > VOEWPORT_MIN_HEIGHT ? bodyHeight + 'px' : 'auto'}">
+                            <div class="v2-table__body-wrapper" ref="body" :style="bodyStyle">
                                 <div :class="[
                                     'v2-table__body',
                                     {
@@ -260,7 +260,10 @@
                 bodyHeight: voewportMin,
                 contentMarginTop: 0,
                 scrollTop: 0,
-                scrollLeft: 0
+                scrollLeft: 0,
+
+                // Styles
+                bodyStyle: null
             };
         },
 
@@ -374,6 +377,21 @@
                         }
                     }
                 }
+            },
+
+            computeBodyStyle () {
+                setTimeout(() => {
+                    let heightOfBody = null;
+                    if (this.$refs.tableArea) {
+                        heightOfBody = this.$refs.tableArea.offsetParent.offsetHeight;
+                        heightOfBody -= 40; // offset for the cell height, look in table-header for the 40 px offset
+                        // TODO need to get the constants organized better
+                    }
+                    this.bodyStyle = {
+                        width: this.isContainerScroll ? this.contentWidth + 'px' : '100%',
+                        height: heightOfBody ? heightOfBody + 'px' : null
+                    };
+                }, 10);
             },
 
             updateScrollbar () {
@@ -765,29 +783,31 @@
             if (this.total > 0 && this.shownPagination) {
                 this.computedTotalPage();
             }
+            this.computeBodyStyle()
+            window.addEventListener('resize', this.computeBodyStyle);
 
-            this.$nextTick(() => {
-                const fun = () => {
-                    this.container = this.isContainerScroll ? this.$refs.container : this.$refs.body;
-                    this.scrollbar = new BeautifyScrollbar(this.container, {
-                        contentWidth: this.$refs.content.scrollWidth,
-                        contentHeight: this.heightOfScrollingArea
-                    });
-                    this.container.addEventListener('bs-update-scroll-value', this.updateHeaderWrapScrollLeft, false);
-                };
-                let done = false;
-                const genFunc = () => {
-                    if (!done) {
-                        if (this.$refs.container && this.$refs.body) {
-                            fun();
-                            done = true;
-                        } else {
-                            setTimeout(genFunc, 250);
-                        }
-                    }
-                };
-                genFunc();
-            });
+            // this.$nextTick(() => {
+            //     const fun = () => {
+            //         this.container = this.isContainerScroll ? this.$refs.container : this.$refs.body;
+            //         this.scrollbar = new BeautifyScrollbar(this.container, {
+            //             contentWidth: this.$refs.content.scrollWidth,
+            //             contentHeight: this.heightOfScrollingArea
+            //         });
+            //         this.container.addEventListener('bs-update-scroll-value', this.updateHeaderWrapScrollLeft, false);
+            //     };
+            //     let done = false;
+            //     const genFunc = () => {
+            //         if (!done) {
+            //             if (this.$refs.container && this.$refs.body) {
+            //                 fun();
+            //                 done = true;
+            //             } else {
+            //                 setTimeout(genFunc, 250);
+            //             }
+            //         }
+            //     };
+            //     genFunc();
+            // });
         },
 
         components: {
@@ -805,6 +825,7 @@
                 this.container.removeEventListener('bs-update-scroll-value',
                 this.updateHeaderWrapScrollLeft, false);                
             }
+            window.removeEventListener('resize', this.computeBodyStyle);
         }
     };
 </script>
