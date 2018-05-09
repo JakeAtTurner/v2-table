@@ -152,12 +152,11 @@
 
 .v2-table__caret-wrapper {
     position: relative;
-    display: inline-block;
     width: 10px;
     height: 16px;
     cursor: pointer;
-    margin-left: 5px;
     vertical-align: middle;
+    float: right;
 }
 
 .v2-table__sort-caret {
@@ -170,11 +169,11 @@
     border: @carret-size solid transparent;
     &.ascending-caret {
         border-bottom: @carret-size solid @border-light-color;
-        top: -7px;
+        top: -9px;
     }
     &.descending-caret {
         border-top: @carret-size solid @border-light-color;
-        bottom: -7px;
+        bottom: -9px;
     }
 }
 
