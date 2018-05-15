@@ -128,7 +128,7 @@
                 default: () => [],
                 required: true
             },
-            defaultSort: {
+            sort: {
                 type: Object,
                 default: () => {
                     return {
@@ -204,7 +204,8 @@
                 type: Boolean,
                 default: false
             },
-            externalFiltering: Function
+            externalFiltering: Function,
+            onSort: Function
         },
 
         provide () {
@@ -232,7 +233,7 @@
                 isIndeterminate: false,
 
                 containerWith: 0,
-                sort: {
+                __sort: {
                     prop: '',
                     order: ''
                 },
@@ -320,29 +321,8 @@
                 deep: true,
                 immediate: true,
                 handler (val) {
-                    this.displayData = val;
-                }
-            },
-            displayData (val) {
-                this.initRows();
-                // TODO implement for the scrollbar update...
-                // if (this.isMetLazyLoad) {
-                //     this.initRenderRows();
-                //     if (this.scrollbar) {
-                //         this.updateScrollbar();
-                //     }
-                // } else {
-                //     this.rows = [].concat(val);
-                // }
-
-                // if (this.updatedSelection && this.selectedIndex.length > 0) {
-                //     this.emitSelectChange();
-                //     return;
-                // } 
-
-                if (this.selectedIndex.length > 0) {
-                    // reset selection status.
-                    this.resetSelection();
+                    this.displayData = [].concat(val);
+                    this.initRows();
                 }
             },
 
@@ -429,13 +409,16 @@
                 const { prop } = col;
                 let order = 'ascending';
 
-                if (this.sort.prop === prop) {
-                    order = this.sort.order === 'descending' ? 'ascending' : 'descending';
+                if (this.__sort.prop === prop) {
+                    order = this.__sort.order === 'descending' ? 'ascending' : 'descending';
                 }
-                this.sort = Object.assign({}, {
+                this.__sort = Object.assign({}, {
                     prop: prop,
                     order: order
                 });
+                if (this.onSort) {
+                    this.onSort(this.__sort)
+                }
             },
             filter () {
                 let data = this.data;
@@ -444,15 +427,17 @@
                 if (this.externalFiltering) {
                     data = this.externalFiltering(data);
                 }
-                this.displayData = data;
+                this.displayData = [].concat(data);
                 this.sortDisplayData();
+                this.initRows();
             },
             resetDataOrder (prop, order, type) {
                 this.__sortingFunc = createSortFunction(prop, order, type);
                 this.sortDisplayData();
+                this.initRows();
             },
             sortDisplayData () {
-                this.displayData = [].concat(this.displayData.sort(this.__sortingFunc));
+                this.displayData = [].concat(this.displayData).sort(this.__sortingFunc);
             },
             changeCurPage (e) {
                 let page = e.target.dataset ? e.target.dataset.page : e.target.getAttribute('data-page');
@@ -580,24 +565,6 @@
                 this.isAll = false;
                 this.isIndeterminate = false;
                 this.emitSelectChange();
-            },
-
-            emitSelectChange () {
-                const rows = [];
-                // if (this.uniqueField) {
-                //     this.selectedIndex.forEach(item => {
-                //         const r = this.displayData.filter(d => d[this.uniqueField] === item);
-                //         rows = [].concat(...rows, ...r);
-                //     });
-                // } else {
-                    
-                // }
-                // row-index
-                this.selectedIndex.forEach(item => {
-                    rows.push(this.displayData[item]);
-                });
-
-                this.$emit('select-change', rows);
             },
 
             handleRowSelect (isChecked, rowIndex) {
@@ -754,8 +721,8 @@
         },
 
         created () {
-            this.sort = Object.assign({}, this.defaultSort, {
-                order: this.defaultSort.order || 'ascending'
+            this.__sort = Object.assign({}, this.sort, {
+                order: this.sort.order || 'ascending'
             });
             if (this.height !== 'auto' && !this.isValidNumber(this.height)) {
                 this.bodyHeight = parseInt(this.height, 10) > this.VOEWPORT_MIN_HEIGHT ? parseInt(this.height, 10) : this.VOEWPORT_MIN_HEIGHT;

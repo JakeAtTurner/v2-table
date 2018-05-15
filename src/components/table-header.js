@@ -27,6 +27,8 @@ export default {
             if (col.sortable && col.type) {
                 cls.push('sortable');
             }
+            // TODO this is weird, the sorting should be change in the table and not controlled by the table header
+            // when the table header when it renders, when the table sort variable has been changed.  this is weird.
             if (this.sort.prop === col.prop) {
                 const order = this.sort.order || 'ascending';
                 cls.push(order);
