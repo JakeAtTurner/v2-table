@@ -4,9 +4,9 @@
  * @param {String} attribute 
  */
 const getAttribute = function (object, attribute) {
-  let attributeSplit = attribute.split('.')
-  return getAttributeFromSplit(object, attributeSplit)
-}
+    const attributeSplit = attribute.split('.');
+    return getAttributeFromSplit(object, attributeSplit);
+};
 
 /**
  * given a list of strings, chains the object to return the attributes of the list
@@ -14,17 +14,16 @@ const getAttribute = function (object, attribute) {
  * @param {*} attributeSplit 
  */
 const getAttributeFromSplit = function (object, attributeSplit) {
-  if (!object) {
-    return null
-  }
-  if (attributeSplit.length === 1) {
-    return object[attributeSplit[0]]
-  } else {
-    return getAttributeFromSplit(object[attributeSplit[0]], attributeSplit.slice(1, attributeSplit.length))
-  }
-}
-
+    if (!object) {
+        return null;
+    }
+    if (attributeSplit.length === 1) {
+        return object[attributeSplit[0]];
+    } else {
+        return getAttributeFromSplit(object[attributeSplit[0]], attributeSplit.slice(1, attributeSplit.length));
+    }
+};
 
 export {
-  getAttribute
-}
+    getAttribute
+};

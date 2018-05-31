@@ -12,11 +12,11 @@
 
 <script>
 export default {
-  props: {
-    nameStyle: Object,
-    overlayStyle: Object
-  }
-}
+    props: {
+        nameStyle: Object,
+        overlayStyle: Object
+    }
+};
 </script>
 
 <style>

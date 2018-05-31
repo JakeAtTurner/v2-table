@@ -1,5 +1,5 @@
 import CheckBox from './checkbox.vue';
-import PopoverFactory from '../common/popover'
+import PopoverFactory from '../common/popover';
 
 export default {
     name: 'table-header',
@@ -14,7 +14,7 @@ export default {
     data () {
         return {
             __filterSection: false
-        }
+        };
     },
     inject: ['table'],
     components: {
@@ -23,18 +23,13 @@ export default {
     methods: {
         getColumnClass (col) {
             const cls = ['v2-table__cell', 'v2-table__column-cell'];
-
             if (col.sortable && col.type) {
                 cls.push('sortable');
             }
             if (this.sort.prop === col.prop) {
                 const order = this.sort.order || 'ascending';
                 cls.push(order);
-                this.$nextTick(() => {
-                    this.table.resetDataOrder(col.prop, order, col.type);
-                });
             }
-
             col.align === 'left' && cls.push('text-left');
             col.align === 'right' && cls.push('text-right');
 
@@ -51,7 +46,7 @@ export default {
             return style;
         },
         getFilters () {
-            return this.columns.filter(col => col.__filter).map(col => col.__filter)
+            return this.columns.filter(col => col.__filter).map(col => col.__filter);
         },
         changeSortRule (col) {
             if (col.sortable && col.type) {
@@ -59,41 +54,40 @@ export default {
             }
         },
         filterRule (e, col) {
-            e.stopPropagation()
+            e.stopPropagation();
             // TODO need to insert a new type of popover here, based off the type of the column
             // it will have to be like the original style of the popovers
             if (col.filterable) {
-                col.__filterSection = !col.__filterSection
+                col.__filterSection = !col.__filterSection;
                 if (col.filterable.type === 'checklist') {
-                    let filter = col.__filter
+                    let filter = col.__filter;
                     if (!filter) {
                         filter = {
                             type: 'options',
                             field: col.prop,
                             values: {}
-                        }
-                        col.__filter = filter
+                        };
+                        col.__filter = filter;
                     }
-                    let popover = PopoverFactory.createCheckList({
+                    const popover = PopoverFactory.createCheckList({
                         direction: 'right',
                         list: col.filterable.options,
                         selectedOptions: Object.keys(col.__filter.values),
                         parent: e.currentTarget,
                         colorTheme: 'black'
-                    })
+                    });
                     popover.$on('select', (value) => {
                         // TODO need to think about the ways a filter should be created
                         // need to have the correct way a DataStructure could be created here
                         if (filter.values[value]) {
-                            delete filter.values[value]
+                            delete filter.values[value];
                         } else {
-                            filter.values[value] = true
+                            filter.values[value] = true;
                         }
-                        this.table.filter()
-                    })
+                        this.table.filter();
+                    });
                 }
-                
-            }
+            };
         }
     },
 
@@ -102,7 +96,7 @@ export default {
             <div class='v2-table__table-thead'>
                 <div class='v2-table__header-row'>
                     {/* Have to add in the hover Over Header here as well. this aligns the Headers correctly */}
-                    <div key='hoverOverColumnHeader' class="v2-table__cell v2-table__column-cell" style={ {width: '0px'} } ></div>
+                    <div key='hoverOverColumnHeader' class='v2-table__cell v2-table__column-cell' style={ { width: '0px' } } ></div>
                     {
                         this.columns.map((column, index) => {
                             return (
@@ -125,10 +119,10 @@ export default {
                                             : ''  
                                     }
                                     {
-                                        column.filterable ?
-                                            <span onClick={(e) => this.filterRule(e, column)}>
-                                                <svg aria-hidden="true" data-prefix="fas" data-icon="filter" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="filter-svg">
-                                                    <path fill="currentColor" d="M487.976 0H24.028C2.71 0-8.047 25.866 7.058 40.971L192 225.941V432c0 7.831 3.821 15.17 10.237 19.662l80 55.98C298.02 518.69 320 507.493 320 487.98V225.941l184.947-184.97C520.021 25.896 509.338 0 487.976 0z" class="">
+                                        column.filterable
+                                            ? <span onClick={(e) => this.filterRule(e, column)}>
+                                                <svg aria-hidden='true' data-prefix='fas' data-icon='filter' role='img' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' class='filter-svg'>
+                                                    <path fill='currentColor' d='M487.976 0H24.028C2.71 0-8.047 25.866 7.058 40.971L192 225.941V432c0 7.831 3.821 15.17 10.237 19.662l80 55.98C298.02 518.69 320 507.493 320 487.98V225.941l184.947-184.97C520.021 25.896 509.338 0 487.976 0z'>
                                                     </path>
                                                 </svg>
                                             </span>

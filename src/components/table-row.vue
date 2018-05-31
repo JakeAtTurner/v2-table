@@ -47,7 +47,7 @@
                 nameColumWidth: 0,
                 overlayWidth: 0,
                 isHovered: false
-            }
+            };
         },
         methods: {
             getRowClass () {
@@ -72,7 +72,6 @@
                 if (!isNaN(parseInt(this.table.rowHeight, 10))) {
                     style.height = parseInt(this.table.rowHeight, 10) + 'px';
                 }
-
                 return style;
             },
 
@@ -85,44 +84,44 @@
             },
             resize () {
                 setTimeout(() => {
-                    this.rowHeight = this.$el.clientHeight
-                    let columns = this.$el.getElementsByClassName('v2-table__cell')
+                    this.rowHeight = this.$el.clientHeight;
+                    const columns = this.$el.getElementsByClassName('v2-table__cell');
                     if (columns.length > 0) {
-                        this.nameColumWidth = columns[0].clientWidth
-                        let totalOverlayWidth = 0
+                        this.nameColumWidth = columns[0].clientWidth;
+                        let totalOverlayWidth = 0;
                         for (let i = 1; i < columns.length; i++) {
-                            totalOverlayWidth += columns[i].clientWidth
+                            totalOverlayWidth += columns[i].clientWidth;
                         }
-                        this.overlayWidth = totalOverlayWidth
+                        this.overlayWidth = totalOverlayWidth;
                     }
-                }, 10)
+                }, 10);
             }
         },
         computed: {
             overlayNameStyle () {
-                let width = this.nameColumWidth
+                const width = this.nameColumWidth;
                 return { 
                     width: `${width}px !important`, 
                     float: 'left',
                     height: this.rowHeight + 'px'
-                }
+                };
             },
             overlayStyle () {
                 return {
                     height: this.rowHeight + 'px',
                     width: this.overlayWidth + 'px'
-                }
+                };
             },
             isHoveredAndHasHovered () {
-                return this.hoverOverlayComponent && this.isHovered
+                return this.hoverOverlayComponent && this.isHovered;
             }
         },
         mounted () {
-            this.resize()
-            window.addEventListener('resize', this.resize)
+            this.resize();
+            window.addEventListener('resize', this.resize);
         },
         destroyed () {
-            window.removeEventListener('resize', this.resize)
+            window.removeEventListener('resize', this.resize);
         },
         components: {
             TableCell,

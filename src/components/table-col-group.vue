@@ -3,7 +3,7 @@
         <div style="width: 0px;"></div>
         <div v-for="(column, index) in columns" 
             :key="index"
-            :style="getColStyle(column)">
+            :style="getColStyle(column, index)">
         </div>
     </div>
 </template>
@@ -19,9 +19,9 @@
 
         methods: {
 
-            getColStyle (col) {
+            getColStyle (col, index) {
                 const style = {};
-
+                // console.log({label: col.label, index})
                 if (typeof col.width !== undefined && !isNaN(parseInt(col.width))) {
                     style.width = `${parseInt(col.width, 10)}px`;
                 }
