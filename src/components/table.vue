@@ -133,7 +133,8 @@
                 default: () => {
                     return {
                         prop: '',
-                        order: 'ascending' // ['ascending', 'descending']
+                        order: 'ascending', // ['ascending', 'descending'],
+                        type: String
                     };
                 }
             },
@@ -443,7 +444,11 @@
                 this.initRows();
             },
             setSortingFunction () {
-                this.__sortingFunc = createSortFunction(this.__sort.prop, this.__sort.order, this.__sort.type);
+                if (this.__sort && this.__sort.prop) {
+                    this.__sortingFunc = createSortFunction(this.__sort.prop, this.__sort.order, this.__sort.type);
+                } else {
+                    this.__sortingFunc = (data) => data;
+                }
             },
             sortDisplayData () {
                 this.setSortingFunction();
