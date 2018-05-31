@@ -420,7 +420,7 @@
                     type: col.type
                 });
                 if (this.onSort) {
-                    this.onSort(this.__sort)
+                    this.onSort(this.__sort);
                 }
                 this.resetDataOrder();
             },
@@ -446,7 +446,7 @@
                 this.__sortingFunc = createSortFunction(this.__sort.prop, this.__sort.order, this.__sort.type);
             },
             sortDisplayData () {
-                this.setSortingFunction()
+                this.setSortingFunction();
                 this.displayData = [].concat(this.displayData).sort(this.__sortingFunc);
             },
             changeCurPage (e) {
@@ -760,7 +760,7 @@
             if (this.total > 0 && this.shownPagination) {
                 this.computedTotalPage();
             }
-            this.computeBodyStyle()
+            this.computeBodyStyle();
             window.addEventListener('resize', this.computeBodyStyle);
 
             // this.$nextTick(() => {
