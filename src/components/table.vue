@@ -52,7 +52,7 @@
                                 ]" 
                                 :style="{width: !isContainerScroll ? contentWidth + 'px' : '100%'}">
                                     <table-col-group :columns="columns"></table-col-group>
-                                    <table-header :columns="columns" :sort="sort" ref="headers"></table-header>
+                                    <table-header :columns="columns" :sort="__sort" ref="headers"></table-header>
                                 </div>
                             </div>
 
@@ -321,8 +321,10 @@
                 deep: true,
                 immediate: true,
                 handler (val) {
-                    this.displayData = [].concat(val);
-                    this.initRows();
+                    if (val.length > 0) {
+                        this.displayData = [].concat(val);
+                        this.filter();
+                    }
                 }
             },
 
@@ -414,16 +416,21 @@
                 }
                 this.__sort = Object.assign({}, {
                     prop: prop,
-                    order: order
+                    order: order,
+                    type: col.type
                 });
                 if (this.onSort) {
                     this.onSort(this.__sort)
                 }
+                this.resetDataOrder();
             },
             filter () {
                 let data = this.data;
-                const filters = this.$refs.headers.getFilters();
-                data = applyFilters(filters, data);
+                if (this.$refs.headers) {
+                    // TODO when you implement the filters, make sure that you get the values of the filters
+                    const filters = this.$refs.headers.getFilters();
+                    data = applyFilters(filters, data);
+                }
                 if (this.externalFiltering) {
                     data = this.externalFiltering(data);
                 }
@@ -431,12 +438,15 @@
                 this.sortDisplayData();
                 this.initRows();
             },
-            resetDataOrder (prop, order, type) {
-                this.__sortingFunc = createSortFunction(prop, order, type);
+            resetDataOrder () {
                 this.sortDisplayData();
                 this.initRows();
             },
+            setSortingFunction () {
+                this.__sortingFunc = createSortFunction(this.__sort.prop, this.__sort.order, this.__sort.type);
+            },
             sortDisplayData () {
+                this.setSortingFunction()
                 this.displayData = [].concat(this.displayData).sort(this.__sortingFunc);
             },
             changeCurPage (e) {
@@ -722,7 +732,8 @@
 
         created () {
             this.__sort = Object.assign({}, this.sort, {
-                order: this.sort.order || 'ascending'
+                order: this.sort.order || 'ascending',
+                type: this.sort.type || String
             });
             if (this.height !== 'auto' && !this.isValidNumber(this.height)) {
                 this.bodyHeight = parseInt(this.height, 10) > this.VOEWPORT_MIN_HEIGHT ? parseInt(this.height, 10) : this.VOEWPORT_MIN_HEIGHT;
@@ -739,8 +750,7 @@
                 .filter(column => column.componentInstance && column.componentInstance.$options.name === 'v2-table-column')
                 .map(column => column.componentInstance);
             this.setColumns(columnComponents);
-
-            this.initRows();
+            this.filter();
 
             // Whether scroll event binding table-container element or table-body element
             if (this.leftColumns.length || this.rightColumns.length || this.bodyHeight > this.VOEWPORT_MIN_HEIGHT) {
