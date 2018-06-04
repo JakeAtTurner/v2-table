@@ -623,7 +623,7 @@
                         this.rows = [].concat(this.displayData);
                     }
                 }
-                this.rows = this.rows.slice(0,200)
+                this.rows = this.rows.slice(0, 200);
             },
 
             adjustRows () {
