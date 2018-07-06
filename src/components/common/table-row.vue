@@ -17,18 +17,21 @@
             <template v-else>
                 <div></div>
             </template>
-            <template v-for="(column, index) in columns">
-                <!-- <div :key="index"                         :class="{
-                            'v2-table-row__section-row__one-block': section ? section.seperate : false   
-                        }"> -->
+            <template v-for="(columns, rowColumnIndex) in rowColumns">
+                <div
+                    :key="rowColumnIndex"
+                    :class="{
+                        'v2-table-row__section-row': section,
+                        'v2-table-row__section-row__one-block': section && ((rowColumnIndex + 1) % 2 === 1)
+                    }">
                     <table-cell
-                        :seperate="section ? section.seperate : false"
+                        v-for="(column,index) in columns"
                         :row="row"
                         :column="column"
                         :rowIndex="rowIndex"
                         :key="index">
-                    </table-cell>
-                <!-- </div> -->
+                    </table-cell>            
+                </div>
             </template>
         </div>
 </template>
@@ -47,9 +50,13 @@
                 type: Object,
                 default: () => {}
             },
+            // section: {
+            //     type: Object,
+            //     default: () => null
+            // },
             section: {
-                type: Object,
-                default: () => null
+                type: Boolean,
+                default: false
             },
             rowIndex: [String, Number],
             hoverOverlayComponent: String
@@ -73,9 +80,10 @@
                 }
                 if (this.section) {
                     cls.push('v2-table-row__section-row');
-                    if (!this.section.seperate) {
-                        cls.push('v2-table-row__section-row__one-block');
-                    }
+                    // TODO move this to the cell position
+                    // if (!this.section.seperate) {
+                    //     cls.push('v2-table-row__section-row__one-block');
+                    // }
                 }
                 if (typeof this.table.rowClassName !== 'undefined') {
                     const customRowClass = typeof this.table.rowClassName === 'function' ? this.table.rowClassName({ row: this.row, rowIndex: this.rowIndex }) : this.table.rowClassName;
@@ -132,6 +140,24 @@
             },
             isHoveredAndHasHovered () {
                 return this.hoverOverlayComponent && this.isHovered;
+            },
+            rowColumns () {
+                const rowColumns = [];
+                rowColumns.push([]);
+                let currentSection = 0;
+                for (let i = 0; i < this.columns.length; i++) {
+                    let col = this.columns[i];
+                    if (col.seperator) {
+                        rowColumns.push([]);
+                        currentSection++;
+                        rowColumns[currentSection].push(col)
+                        rowColumns.push([]);
+                        currentSection++;
+                    } else {
+                        rowColumns[currentSection].push(col);
+                    }
+                }
+                return rowColumns;
             }
         },
         mounted () {

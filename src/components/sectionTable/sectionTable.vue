@@ -44,12 +44,17 @@
                                     }
                                 ]" 
                                 :style="{width: !isContainerScroll ? contentWidth + 'px' : '100%'}">
-                                    <template v-for="(section, index) in sections">
+                                    <!-- <template v-for="(section, index) in sections">
                                         <div :key="index" class="v2-table__header__section">
                                             <table-col-group :columns="section.columns"></table-col-group>
                                             <table-header :columns="section.columns" :sort="__sort" ref="headers"></table-header>
                                         </div>
-                                    </template>
+                                    </template> -->
+
+                                    <div class="v2-table__header__section">
+                                        <table-col-group :columns="columns"></table-col-group>
+                                        <table-header :columns="columns" :sort="__sort" ref="headers"></table-header>
+                                    </div>
                                 </div>
                             </div>
 
@@ -74,9 +79,35 @@
 
 
                                         -->
+                                        <template v-if="displayData && displayData.length > 0">
+                                          <div>
+                                            <table-col-group :columns="columns"></table-col-group>
+                                            <div class="v2-table__table-tbody">
+                                                <template v-for="(row, rowIndex) in rows">
+                                                  <div :key="rowIndex" style="display: table-row">
+                                                    <table-row
+                                                        :row="row"
+                                                        :rowIndex="rowIndex"
+                                                        :columns="columns"
+                                                        :hoverOverlayComponent="hoverOverlayComponent"
+                                                        section
+                                                    >
+                                                    </table-row>
+                                                  </div>
+                                                </template>
+                                            </div>
+                                          </div>
+                                        </template>
+
+
+
+
+
+
+
                                         <!-- TODO Need to be able to have the same heights for the sections -->
                                         <!--TODO we need to make sure that there are not 2 table-col-groups, but just one of them-->
-                                        <template v-if="displayData && displayData.length > 0">
+                                        <!-- <template v-if="displayData && displayData.length > 0">
                                           <div>
                                             <template v-for="(section, index) in sections">
                                                 <table-col-group :key="index" :columns="section.columns"></table-col-group>
@@ -97,7 +128,7 @@
                                                 </template>
                                             </div>
                                           </div>
-                                        </template>
+                                        </template> -->
                                         
                                         
                                         <!-- <template v-for="(section, index) in sections">
@@ -216,7 +247,19 @@
         },
         methods: {
             setSections () {
+                const columns = [];
                 this.sections = this.sectionSlots;
+                for (let i = 0; i < this.sections.length; i ++) {
+                    const sec = this.sections[i];
+                    if (i > 0) {
+                        columns.push({
+                            width: 10,
+                            seperator: true
+                        });
+                    }
+                    columns.push.apply(columns, sec.columns)
+                }
+                this.columns = columns;
             },
             setSectionWidths () {
               const sectionWidths = [];
@@ -233,6 +276,7 @@
                     sectionWidth += head.clientWidth;
                     currentHeader++;
                   }
+                  // TODO include the included column to this
                   sectionWidths.push(sectionWidth);
                 }
                 this.canRenderBody = true;

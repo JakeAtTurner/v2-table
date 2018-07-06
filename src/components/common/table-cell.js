@@ -11,19 +11,18 @@ import CheckBox from './checkbox.vue';
 export default {
     functional: true,
 
-    props: ['column', 'row', 'rowIndex', 'seperate'],
+    props: ['column', 'row', 'rowIndex'],
 
     render (createElement, context) {
         const { props } = context;
-        const { row, column, rowIndex, seperate } = props;
+        const { row, column, rowIndex } = props;
 
         const data = {
             class: {
                 'v2-table__cell': true,
                 'v2-table__row-cell': true,
                 'text-left': column.align === 'left',
-                'text-right': column.align === 'right',
-                'v2-table-row__section-row__one-block': seperate && !column.seperator
+                'text-right': column.align === 'right'
             },
             style: {
                 width: (column.headerWidth || column.width) + 'px'
