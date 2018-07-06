@@ -94,6 +94,7 @@ const tableMixin = {
         default: false
     },
     hoverOverlayComponent: String,
+    bottomOverlayComponent: String,
     windowData: {
         type: Boolean,
         default: false
@@ -118,6 +119,7 @@ const tableMixin = {
           leftColumns: [],
           rightColumns: [],
           selectionColumn: null,
+          selectedBottomOverlayIndex: null,
 
           displayData: [],
           __sortingFunc: (d) => d,
@@ -263,7 +265,13 @@ const tableMixin = {
               }
           }
       },
-
+      setBottomOverlay (rowIndex) {
+            if (this.selectedBottomOverlayIndex === rowIndex) {
+                this.selectedBottomOverlayIndex = null;
+            } else {
+                this.selectedBottomOverlayIndex = rowIndex;
+            }
+      },
       handleScrollingAndAdjustments () {
         // Whether scroll event binding table-container element or table-body element
         if (this.leftColumns.length || this.rightColumns.length || this.bodyHeight > this.VOEWPORT_MIN_HEIGHT) {
@@ -642,6 +650,10 @@ const tableMixin = {
   mounted () {
       if (!Bus._Vue) {
           throw new Error('[v2-table]: Must be call Vue.use(v2-table) before used');
+      }
+      if (this.hoverOverlayComponent && this.bottomOverlayComponent) {
+          throw new Error('Shouldnt have both the hoverOverlayComponent' +
+            ' and the bottomOverlayComponent assign a value, only choose one,  or make it happen')
       }
   },
 

@@ -7,6 +7,7 @@
 
         COMPONENTS:
             hoverOverlayComponent - this is the Hover Overlay Componet that appears when you hover over a row.
+            bottomOverlayComponent - this is the overlay component that is beneath the row
     -->
     <div class="v2-table-container v2-section-table-container" ref="tableArea">
         <!-- TODO need to complete the classes and styleing -->
@@ -51,6 +52,10 @@
                                         </div>
                                     </template> -->
                                     <!--TODO this div is causing the headers to be shortened -->
+                                    <!--
+                                        TODO so an idea would be to use rolespan to lengthen the rows in the table and then make the width 
+                                        - 2Xborderlength to get the circular borders
+                                    -->
                                     <div class="v2-table__header__section">
                                         <table-col-group :columns="columns"></table-col-group>
                                         <table-header :columns="columns" :sort="__sort" ref="headers"></table-header>
@@ -88,8 +93,10 @@
                                                     <table-row
                                                         :row="row"
                                                         :rowIndex="rowIndex"
+                                                        :displayBotttomOverlay="rowIndex === selectedBottomOverlayIndex"
                                                         :columns="columns"
                                                         :hoverOverlayComponent="hoverOverlayComponent"
+                                                        :bottomOverlayComponent="bottomOverlayComponent"
                                                         section
                                                     >
                                                     </table-row>
@@ -310,6 +317,10 @@
 
     .v2-table__row.v2-table-row__section-row.v2-table-row {
         margin: 10px 0px 10px 0px !important;
+    }
+
+    .v2-table__cell {
+        border: none !important;
     }
 }
 </style>

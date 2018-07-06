@@ -8,6 +8,7 @@
     ]" :style="{width: (!table.isContainerScroll && type === 'normal') ? table.contentWidth + 'px' : '100%'}">
         <table-col-group :columns="cols"></table-col-group>
         <div class="v2-table__table-tbody">
+            <!-- TODO organize the css for v2-table__row-->
             <div role="row" class="v2-table__row" :style="getRowStyle()">
                 <div class="v2-table__cell v2-table__footer-cell"
                     v-for="(column, index) in cols"

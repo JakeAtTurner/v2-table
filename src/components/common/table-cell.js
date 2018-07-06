@@ -36,8 +36,12 @@ export default {
                     curRow: row
                 }
             })]);
-        } else if (column.$scopedSlots && column.$scopedSlots.default) {
-            return createElement('div', data, column.$scopedSlots.default(row));
+        } else if (column.$scopedSlots) {
+            if (column.$scopedSlots.default) {
+                return createElement('div', data, column.$scopedSlots.default(row));
+            } else if (column.$scopedSlots.rowIndex) {
+                return createElement('div', data, column.$scopedSlots.rowIndex(rowIndex));
+            }
         } else {
             data.domProps = {};
             data.domProps.innerHTML = typeof row[column.prop] !== 'undefined' ? row[column.prop] : '';

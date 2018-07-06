@@ -160,6 +160,7 @@ npm run dev
 * need to see if the prop attribute of table-column is used anywhere else...
 * need to see if the type attribute of table-column is used anywhere else and is useful for the application...
 * filter-svg css class is in table.vue put it somewhere else
+* v2-table-row__bottom-overlay-row-affect is the affect applied when the bottomo overlay is handled
 ##CHANGEAS
 * added in the overlay
 * got rid of the $emit('sort-change') it is better to keep it encapsulated

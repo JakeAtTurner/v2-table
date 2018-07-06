@@ -3,10 +3,11 @@
             role="row"
             id="roleIndex"
             ref="rowIndex"
-            :class="[
-                getRowClass(),
-                'v2-table-row'
-            ]"
+            :class="{
+                [getRowClass()]: true,
+                'v2-table-row': true,
+                'v2-table-row__bottom-overlay-row-affect': displayBotttomOverlay
+            }"
             @mouseenter="handleRowHover"
             @mouseleave="handleRowLeave">
             <template v-if="isHoveredAndHasHovered">
@@ -14,6 +15,18 @@
                     <component v-bind:is="hoverOverlayComponent" :row="row"/>
                 </row-hovered-section>
             </template>
+            <template v-if="displayBotttomOverlay">
+                <row-bottom-overlay-section
+                    :heightOfRow="rowHeight"
+                    :lengthOfNonCoveredArea="nameColumWidth"
+                    :totalWidth="overlayWidth"
+                    >
+                    <component
+                        v-bind:is="bottomOverlayComponent"
+                        :row="row"/>
+                </row-bottom-overlay-section>
+            </template>
+            <!--Needed for the 1 col-span that is used to cover this area.-->
             <template v-else>
                 <div></div>
             </template>
@@ -50,6 +63,7 @@
 <script>
     import TableCell from './table-cell';
     import RowHoveredSection from './table-row-hovered-section.vue';
+    import RowBottomOverlaySection from './row-bottom-overlay-section.vue';
 
     export default {
         props: {
@@ -66,7 +80,12 @@
                 default: false
             },
             rowIndex: [String, Number],
-            hoverOverlayComponent: String
+            hoverOverlayComponent: String,
+            bottomOverlayComponent: String,
+            displayBotttomOverlay: {
+                type: Boolean,
+                default: false
+            }
         },
         inject: ['table'],
         data () {
@@ -116,6 +135,8 @@
                 this.isHovered = false;
             },
             resize () {
+                // TODO what is calling this??  it shouldn't
+                // Yeah it should not, this is causing a lot of overhead
                 setTimeout(() => {
                     this.rowHeight = this.$el.clientHeight;
                     const columns = this.$el.getElementsByClassName('v2-table__cell');
@@ -176,22 +197,13 @@
         },
         components: {
             TableCell,
-            RowHoveredSection
+            RowHoveredSection,
+            RowBottomOverlaySection
         }
     };
 </script>
 
 <style lang='scss'>
-.row_hover_overlay {
-    position: absolute !important;
-    z-index: 100 !important;
-    width: 100%;
-
-    &__overLayPortion {
-        float: left;
-    }
-}
-
 .v2-table-row {
     &__section-row {
         display: inline-block !important;
@@ -201,7 +213,6 @@
             border-radius: 16px;
         }
     }
-
 }
 
 </style>
