@@ -37,8 +37,11 @@ export default {
         },
         getColStyle (col) {
             const style = {};
-            
-            style.width = !isNaN(parseInt(col.width)) ? '90px' : `${parseInt(col.width, 10)}px`;
+            console.log({
+                truth: !isNaN(parseInt(col.width)),
+                parsed: `${parseInt(col.width, 10)}px`
+            });
+            style.width = isNaN(parseInt(col.width)) ? '90px' : `${parseInt(col.width, 10)}px`;
             style.height = !isNaN(parseInt(this.table.colHeight, 10)) ? '40px' : `${parseInt(this.table.colHeight, 10)}px`;
 
             // style.textAlign = ['left', 'center', 'right'].indexOf(col.align) > -1 ? col.align : 'center';

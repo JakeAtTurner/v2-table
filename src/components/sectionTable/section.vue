@@ -18,10 +18,25 @@
     },
     computed: {
       columns () {
-        return this.$slots.default.filter(column => {
+        const columns = this.$slots.default.filter(column => {
             return column.componentInstance &&
             column.componentInstance.$options.name === 'v2-table-column'
-        }).map(column => column.componentInstance)
+        }).map(column => column.componentInstance);
+        if (this.seperate) {
+          const seperateColumns = [];
+          for (let i = 0; i < columns.length; i++) {
+            if ( i > 0) {
+              seperateColumns.push({
+                width: 10,
+                seperator: true
+              });
+            }
+            seperateColumns.push(columns[i]);
+          }
+          return seperateColumns;
+        } else {
+          return columns;
+        }
       }
     }
   };

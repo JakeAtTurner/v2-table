@@ -23,7 +23,7 @@ export default {
                 'v2-table__row-cell': true,
                 'text-left': column.align === 'left',
                 'text-right': column.align === 'right',
-                'v2-table-row__section-row__one-block': seperate
+                'v2-table-row__section-row__one-block': seperate && !column.seperator
             },
             style: {
                 width: (column.headerWidth || column.width) + 'px'
@@ -37,7 +37,7 @@ export default {
                     curRow: row
                 }
             })]);
-        } else if (column.$scopedSlots.default) {
+        } else if (column.$scopedSlots && column.$scopedSlots.default) {
             return createElement('div', data, column.$scopedSlots.default(row));
         } else {
             data.domProps = {};

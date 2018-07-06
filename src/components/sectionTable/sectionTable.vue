@@ -83,15 +83,17 @@
                                             </template>
                                             <div class="v2-table__table-tbody">
                                                 <template v-for="(row, rowIndex) in rows">
+                                                  <div :key="rowIndex" style="display: table-row">
                                                     <table-row
                                                         v-for="(section, sectionIndex) in sections"
-                                                        :key="rowIndex + '-' + sectionIndex" 
+                                                        :key="sectionIndex" 
                                                         :row="row"
                                                         :rowIndex="rowIndex"
                                                         :columns="section.columns"
                                                         :hoverOverlayComponent="hoverOverlayComponent"
                                                         :section="section">
                                                     </table-row>
+                                                  </div>
                                                 </template>
                                             </div>
                                           </div>
@@ -164,6 +166,7 @@
         data: () => {
             return {
                 sections: [],
+                sectionWidths: [],
                 canRenderBody: false
             }
         },
@@ -180,47 +183,18 @@
             headerElements () {
               return this.$el.getElementsByClassName("v2-table__header__cell");
             },
-            sectionRows () {
-                const sectionRows = [];
-                for (const row in this.rows) {
-                    for (const section in this.sections) {
-                        sectionRows.push({
-                            row,
-                            section
-                        })
-                    }
-                }
-                return sectionRows
-            },
-            numberOfColumns () {
-              let count = 0;
+            sectionColumns () {
+              const sectionColumns = [];
               for (let i = 0; i < this.columnsFromSections.length; i++) {
                 const columns = this.columnsFromSections[i];
                 for (let j = 0; j < columns.length; j++) {
-                  count++;
+                  sectionColumns.push(columns[j]);
                 }
               }
-              return count
+              return sectionColumns;
             },
-            sectionWidths () {
-              const sectionWidths = [];
-              const headers = this.headerElements;
-              // we need the length of 1 column
-              // we need the lengths of both columns
-              let currentHeader = 0;
-              for (let j = 0; j < this.columnsFromSections.length; j++) {
-                let columns = this.columnsFromSections[j];
-                let sectionWidth = 0;
-                for (let k = 0; k < columns.length; k++) {
-                  const col = columns[k];
-                  const head = headers[currentHeader];
-                  col.headerWidth = head.clientWidth;
-                  sectionWidth += head.clientWidth;
-                  currentHeader++;
-                }
-                sectionWidths.push(sectionWidth)
-              }
-              this.canRenderBody = true
+            numberOfColumns () {
+              return this.sectionColumns.length;
             }
         },
         mounted () {
@@ -233,14 +207,39 @@
             /**
              * the widths need to be assigned to the cells at the rate that the widths come in
              */
+            console.log(this.numberOfColumns)
             if (this.headerElements.length !== 0 && this.numberOfColumns !== this.headerElements.length) {
                 console.error('the number of Headers and the Number of Columns does not match, as a result your table could look irregular');
             }
+            this.setSectionWidths();
             this.canRenderBody = true
         },
         methods: {
             setSections () {
                 this.sections = this.sectionSlots;
+            },
+            setSectionWidths () {
+              const sectionWidths = [];
+              const headers = this.headerElements;
+              if (headers.length > 0) {
+                let currentHeader = 0;
+                for (let j = 0; j < this.columnsFromSections.length; j++) {
+                  let columns = this.columnsFromSections[j];
+                  let sectionWidth = 0;
+                  for (let k = 0; k < columns.length; k++) {
+                    const col = columns[k];
+                    const head = headers[currentHeader];
+                    col.headerWidth = head.clientWidth;
+                    sectionWidth += head.clientWidth;
+                    currentHeader++;
+                  }
+                  sectionWidths.push(sectionWidth);
+                }
+                this.canRenderBody = true;
+                this.sectionWidths = sectionWidths;
+              } else {
+                this.sectionWidths = sectionWidths;
+              }
             }
         }
     };

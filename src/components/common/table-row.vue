@@ -73,7 +73,6 @@
                 }
                 if (this.section) {
                     cls.push('v2-table-row__section-row');
-                    console.log(this.section.seperate)
                     if (!this.section.seperate) {
                         cls.push('v2-table-row__section-row__one-block');
                     }
