@@ -1,7 +1,14 @@
 <template>
-        <div role="row" id="roleIndex" ref="rowIndex" :class="[
-            getRowClass()
-        ]" :style="getRowStyle()" @mouseenter="handleRowHover" @mouseleave="handleRowLeave">
+        <div
+            role="row"
+            id="roleIndex"
+            ref="rowIndex"
+            :class="[
+                getRowClass(),
+                'v2-table-row'
+            ]"
+            @mouseenter="handleRowHover"
+            @mouseleave="handleRowLeave">
             <template v-if="isHoveredAndHasHovered">
                 <row-hovered-section :nameStyle="overlayNameStyle" :overlayStyle="overlayStyle" >
                     <component v-bind:is="hoverOverlayComponent" :row="row"/>
@@ -11,12 +18,17 @@
                 <div></div>
             </template>
             <template v-for="(column, index) in columns">
-                <table-cell
-                    :row="row"
-                    :column="column"
-                    :rowIndex="rowIndex"
-                    :key="index">
-                </table-cell>
+                <!-- <div :key="index"                         :class="{
+                            'v2-table-row__section-row__one-block': section ? section.seperate : false   
+                        }"> -->
+                    <table-cell
+                        :seperate="section ? section.seperate : false"
+                        :row="row"
+                        :column="column"
+                        :rowIndex="rowIndex"
+                        :key="index">
+                    </table-cell>
+                <!-- </div> -->
             </template>
         </div>
 </template>
@@ -31,12 +43,14 @@
                 type: Array,
                 default: () => []
             },
-
             row: {
                 type: Object,
                 default: () => {}
             },
-
+            section: {
+                type: Object,
+                default: () => null
+            },
             rowIndex: [String, Number],
             hoverOverlayComponent: String
         },
@@ -52,17 +66,22 @@
         methods: {
             getRowClass () {
                 // TODO consolidate this to a css selector style instead
+                // TODO add stuff here
                 const cls = ['v2-table__row'];
                 if (this.table.stripe && (this.rowIndex + 1) % 2 === 0) {
                     cls.push('v2-table__row-striped');
                 }
-
-                // custom row class
+                if (this.section) {
+                    cls.push('v2-table-row__section-row');
+                    console.log(this.section.seperate)
+                    if (!this.section.seperate) {
+                        cls.push('v2-table-row__section-row__one-block');
+                    }
+                }
                 if (typeof this.table.rowClassName !== 'undefined') {
                     const customRowClass = typeof this.table.rowClassName === 'function' ? this.table.rowClassName({ row: this.row, rowIndex: this.rowIndex }) : this.table.rowClassName;
                     cls.push(typeof customRowClass === 'string' ? customRowClass : '');
                 }
-
                 return cls.join(' ');
             },
 
@@ -139,6 +158,19 @@
     &__overLayPortion {
         float: left;
     }
+}
+
+.v2-table-row {
+    &__section-row {
+        display: inline-block !important;
+
+        &__one-block {
+            margin: 10px 10px 10px 10px !important;
+            border: 1px solid #ccc!important;
+            border-radius: 16px;
+        }
+    }
+
 }
 
 </style>

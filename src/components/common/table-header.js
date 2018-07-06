@@ -1,5 +1,5 @@
 import CheckBox from './checkbox.vue';
-import PopoverFactory from '../common/popover';
+import PopoverFactory from '../../common/popover';
 
 export default {
     name: 'table-header',
@@ -22,7 +22,7 @@ export default {
     },
     methods: {
         getColumnClass (col) {
-            const cls = ['v2-table__cell', 'v2-table__column-cell'];
+            const cls = ['v2-table__cell', 'v2-table__column-cell', 'v2-table__header__cell'];
             if (col.sortable && col.type) {
                 cls.push('sortable');
             }

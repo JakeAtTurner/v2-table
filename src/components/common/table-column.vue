@@ -37,6 +37,11 @@
                 validator: (val) => ['left', 'center', 'right'].indexOf(val) > -1
             },
             renderHeader: [Function]
+        },
+        data: () => {
+            return {
+                headerWidth: null
+            }
         }
     };
 </script>

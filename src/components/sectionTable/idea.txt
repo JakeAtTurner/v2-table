@@ -1,0 +1,26 @@
+
+
+<div>
+  for section in sections
+    <headerSectionArea>
+</div>
+
+<div>
+
+  for section in section 
+    for columns in section
+      <tableHeaderSection
+      {{columnds.label}}
+      </tableHeaderSection>
+
+  for d in data
+    for section in section
+      <sectionColumn>
+        for c in section.columns
+        <column >
+        </column>
+      </sectionColumn>
+
+</div>
+
+
