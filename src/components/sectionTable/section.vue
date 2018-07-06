@@ -1,5 +1,7 @@
 <!-- 
   This should contain the slots for the columns of the section
+  A section can be seperate, meaning it is seperated
+  this will increase the number of columns by int(NumOfColumns / 2)
   SLOTS -
     - default -this is where you put the v2-table-column s at so that we can have a column based section
 -->
@@ -36,6 +38,16 @@
           return seperateColumns;
         } else {
           return columns;
+        }
+      },
+      numberOfColumns () {
+        const numOfColumns = this.columns.length;
+        if (numberOfColumns === 0) {
+          return 0;
+        } else if (this.seperate) {
+          return numberOfColumns + Math.floor(numberOfColumns / 2);
+        } else {
+          return numberOfColumns;
         }
       }
     }

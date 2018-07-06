@@ -17,12 +17,14 @@
             <template v-else>
                 <div></div>
             </template>
-            <template v-for="(columns, rowColumnIndex) in rowColumns">
+            <template
+                v-if='section'
+                v-for="(columns, rowColumnIndex) in rowColumns">
                 <div
                     :key="rowColumnIndex"
                     :class="{
-                        'v2-table-row__section-row': section,
-                        'v2-table-row__section-row__one-block': section && ((rowColumnIndex + 1) % 2 === 1)
+                        'v2-table-row__section-row': true,
+                        'v2-table-row__section-row__one-block': ((rowColumnIndex + 1) % 2 === 1)
                     }">
                     <table-cell
                         v-for="(column,index) in columns"
@@ -30,8 +32,17 @@
                         :column="column"
                         :rowIndex="rowIndex"
                         :key="index">
-                    </table-cell>            
+                    </table-cell>
                 </div>
+            </template>
+            <template v-else>
+                <table-cell
+                    v-for="(column,index) in columns"
+                    :row="row"
+                    :column="column"
+                    :rowIndex="rowIndex"
+                    :key="index">
+                </table-cell>
             </template>
         </div>
 </template>
@@ -50,10 +61,6 @@
                 type: Object,
                 default: () => {}
             },
-            // section: {
-            //     type: Object,
-            //     default: () => null
-            // },
             section: {
                 type: Boolean,
                 default: false
@@ -190,7 +197,6 @@
         display: inline-block !important;
 
         &__one-block {
-            margin: 10px 10px 10px 10px !important;
             border: 1px solid #ccc!important;
             border-radius: 16px;
         }

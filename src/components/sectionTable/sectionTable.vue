@@ -50,7 +50,7 @@
                                             <table-header :columns="section.columns" :sort="__sort" ref="headers"></table-header>
                                         </div>
                                     </template> -->
-
+                                    <!--TODO this div is causing the headers to be shortened -->
                                     <div class="v2-table__header__section">
                                         <table-col-group :columns="columns"></table-col-group>
                                         <table-header :columns="columns" :sort="__sort" ref="headers"></table-header>
@@ -225,7 +225,7 @@
               return sectionColumns;
             },
             numberOfColumns () {
-              return this.sectionColumns.length;
+              return this.columns.length;
             }
         },
         mounted () {
@@ -238,7 +238,6 @@
             /**
              * the widths need to be assigned to the cells at the rate that the widths come in
              */
-            console.log(this.numberOfColumns)
             if (this.headerElements.length !== 0 && this.numberOfColumns !== this.headerElements.length) {
                 console.error('the number of Headers and the Number of Columns does not match, as a result your table could look irregular');
             }
@@ -266,20 +265,24 @@
               const headers = this.headerElements;
               if (headers.length > 0) {
                 let currentHeader = 0;
-                for (let j = 0; j < this.columnsFromSections.length; j++) {
-                  let columns = this.columnsFromSections[j];
-                  let sectionWidth = 0;
-                  for (let k = 0; k < columns.length; k++) {
-                    const col = columns[k];
-                    const head = headers[currentHeader];
+                for (let i = 0; i < this.columns.length; i++) {
+                    const col = this.columns[i];
+                    const head = headers[i];
                     col.headerWidth = head.clientWidth;
-                    sectionWidth += head.clientWidth;
-                    currentHeader++;
-                  }
-                  // TODO include the included column to this
-                  sectionWidths.push(sectionWidth);
                 }
-                this.canRenderBody = true;
+                // for (let j = 0; j < this.columnsFromSections.length; j++) {
+                //   let columns = this.columnsFromSections[j];
+                //   let sectionWidth = 0;
+                //   for (let k = 0; k < columns.length; k++) {
+                //     const col = columns[k];
+                //     const head = headers[currentHeader];
+                //     col.headerWidth = head.clientWidth;
+                //     sectionWidth += head.clientWidth;
+                //     currentHeader++;
+                //   }
+                //   // TODO include the included column to this
+                //   sectionWidths.push(sectionWidth);
+                // }
                 this.sectionWidths = sectionWidths;
               } else {
                 this.sectionWidths = sectionWidths;
@@ -303,6 +306,10 @@
 
     .v2-table__header__section {
         display: inline-block;
+    }
+
+    .v2-table__row.v2-table-row__section-row.v2-table-row {
+        margin: 10px 0px 10px 0px !important;
     }
 }
 </style>
