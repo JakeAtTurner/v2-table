@@ -16,7 +16,23 @@
     name: 'v2-table-section',
     props: {
       label: String,
-      seperate: Boolean
+      seperate: Boolean,
+      addToStyle: {
+        type: Object,
+        default: () => {
+          return {}
+        }
+      }
+    },
+    methods: {
+      getStyle (width) {
+        return {
+          'display': 'inline-block',
+          'width': width + 'px',
+          'text-align': 'center',
+          ...this.addToStyle
+        }
+      }
     },
     computed: {
       columns () {

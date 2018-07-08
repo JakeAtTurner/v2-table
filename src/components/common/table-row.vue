@@ -31,26 +31,20 @@
             </template>
             <template
                 v-if='section'
-                v-for="(columns, rowColumnIndex) in rowColumns">
-                <!-- <div
-                    :key="rowColumnIndex"
-                    :class="{
-                        'v2-table-row__section-row': true,
-                        'v2-table-row__section-row__one-block': ((rowColumnIndex + 1) % 2 === 1)
-                    }"> -->
-                    <table-cell
-                        v-for="(column,index) in columns"
-                        apartOfSection
-                        :isFirst="index === 0"
-                        :isLast="index === (columns.length - 1)"
-                        :isSeperator="rowColumnIndex % 2 === 1"
-                        :bottomOverlayAffectedArea="rowColumnIndex === 0 && displayBotttomOverlay"
-                        :row="row"
-                        :column="column"
-                        :rowIndex="rowIndex"
-                        :key="(rowColumnIndex * 100) + rowIndex">
-                    </table-cell>
-                <!-- </div> -->
+                v-for="(columns, rowColumnIndex) in rowColumns"
+            >
+                <table-cell
+                    v-for="(column,index) in columns"
+                    apartOfSection
+                    :isFirst="index === 0"
+                    :isLast="index === (columns.length - 1)"
+                    :isSeperator="rowColumnIndex % 2 === 1"
+                    :bottomOverlayAffectedArea="rowColumnIndex === 0 && displayBotttomOverlay"
+                    :row="row"
+                    :column="column"
+                    :rowIndex="rowIndex"
+                    :key="(rowColumnIndex * 100) + rowIndex">
+                </table-cell>
             </template>
             <template v-else>
                 <table-cell

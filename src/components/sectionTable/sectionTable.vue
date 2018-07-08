@@ -36,6 +36,13 @@
                     
                     <div class="v2-table__table-wrapper">
                         <div class="v2-table__table-container" ref="container">
+                            <!-- TODO this is where the header section will go, the one that will show the section headers -->
+                            <template v-for="(section,index) in sections">
+                                <div :style="section.getStyle(sectionWidths[index])">
+                                    {{section.label  + sectionWidths[index]}}
+                                </div>
+                            </template>
+
                             <div class="v2-table__header-wrapper" ref="header" :style="{width: isContainerScroll ? contentWidth + 'px' : '100%'}">
                                 <div :class="[
                                     'v2-table__header',
@@ -204,8 +211,9 @@
         data: () => {
             return {
                 sections: [],
+                canRenderBody: false,
                 sectionWidths: [],
-                canRenderBody: false
+                hasUpdatedBsectionWidths: false
             }
         },
         components: {
@@ -248,8 +256,12 @@
             if (this.headerElements.length !== 0 && this.numberOfColumns !== this.headerElements.length) {
                 console.error('the number of Headers and the Number of Columns does not match, as a result your table could look irregular');
             }
-            this.setSectionWidths();
-            this.canRenderBody = true
+            // TODO this should more accurately only succed if the column headers have not been inserted
+            // and the headers havent while, the sections have not changed either
+            if (!this.sectionWidths.length > 0) {
+                this.setSectionWidths();
+            }
+            this.canRenderBody = true;
         },
         methods: {
             setSections () {
@@ -268,32 +280,32 @@
                 this.columns = columns;
             },
             setSectionWidths () {
-              const sectionWidths = [];
-              const headers = this.headerElements;
-              if (headers.length > 0) {
-                let currentHeader = 0;
-                for (let i = 0; i < this.columns.length; i++) {
-                    const col = this.columns[i];
-                    const head = headers[i];
-                    col.headerWidth = head.clientWidth;
+                const sectionWidths = [];
+                const headers = this.headerElements;
+                if (headers.length > 0) {
+                    for (let i = 0; i < this.columns.length; i++) {
+                        const col = this.columns[i];
+                        const head = headers[i];
+                        col.headerWidth = head.clientWidth;
+                    }
+                    let currentHeader = 0;
+                    for (let j = 0; j < this.columnsFromSections.length; j++) {
+                        let columns = this.columnsFromSections[j];
+                        let sectionWidth = 0;
+                        if (j > 0) {
+                            const head = headers[currentHeader];
+                            sectionWidth += head.clientWidth;
+                            currentHeader++;
+                        }
+                        for (let k = 0; k < columns.length; k++) {
+                            const head = headers[currentHeader];
+                            sectionWidth += head.clientWidth;
+                            currentHeader++;
+                        }
+                        sectionWidths.push(sectionWidth);
+                    }
+                    this.sectionWidths = sectionWidths;
                 }
-                // for (let j = 0; j < this.columnsFromSections.length; j++) {
-                //   let columns = this.columnsFromSections[j];
-                //   let sectionWidth = 0;
-                //   for (let k = 0; k < columns.length; k++) {
-                //     const col = columns[k];
-                //     const head = headers[currentHeader];
-                //     col.headerWidth = head.clientWidth;
-                //     sectionWidth += head.clientWidth;
-                //     currentHeader++;
-                //   }
-                //   // TODO include the included column to this
-                //   sectionWidths.push(sectionWidth);
-                // }
-                this.sectionWidths = sectionWidths;
-              } else {
-                this.sectionWidths = sectionWidths;
-              }
             }
         }
     };
