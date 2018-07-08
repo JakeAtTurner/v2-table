@@ -1,6 +1,8 @@
 <template>
-  <div class="row-bottom-overlay-section" :style="style">
-    <slot></slot>
+  <div class="row-bottom-overlay-section">
+    <div :style="style">
+      <slot></slot>
+    </div>
   </div>
 </template>
 
@@ -27,8 +29,7 @@ export default {
 .row-bottom-overlay-section {
     position: absolute !important;
     z-index: 100 !important;
-    background-color: black;
-    height: 20px;
+    height: 0px;
 }
 
 </style>

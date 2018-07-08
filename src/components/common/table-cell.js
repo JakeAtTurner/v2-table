@@ -36,18 +36,23 @@ export default {
         isSeperator: {
             type: Boolean,
             deafult: false
+        },
+        bottomOverlayAffectedArea: {
+            type: Boolean,
+            default: false
         }
     },
     render (createElement, context) {
         const { props } = context;
-        const { row, column, rowIndex, apartOfSection } = props;
+        const { row, column, rowIndex, apartOfSection, bottomOverlayAffectedArea } = props;
 
         const data = {
             class: {
                 'v2-table__cell': true,
                 'v2-table__row-cell': true,
                 'text-left': column.align === 'left',
-                'text-right': column.align === 'right'
+                'text-right': column.align === 'right',
+                'v2-table-row__bottom-overlay-row-affect': bottomOverlayAffectedArea
             },
             style: {
                 width: (column.headerWidth || column.width) + 'px'

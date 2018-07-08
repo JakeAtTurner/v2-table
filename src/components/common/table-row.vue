@@ -5,8 +5,7 @@
             ref="rowIndex"
             :class="{
                 [getRowClass()]: true,
-                'v2-table-row': true,
-                'v2-table-row__bottom-overlay-row-affect': displayBotttomOverlay
+                'v2-table-row': true
             }"
             @mouseenter="handleRowHover"
             @mouseleave="handleRowLeave">
@@ -19,7 +18,7 @@
                 <row-bottom-overlay-section
                     :heightOfRow="rowHeight"
                     :lengthOfNonCoveredArea="nameColumWidth"
-                    :totalWidth="overlayWidth"
+                    :totalWidth="sectionalOverlayWidth"
                     >
                     <component
                         v-bind:is="bottomOverlayComponent"
@@ -45,10 +44,11 @@
                         :isFirst="index === 0"
                         :isLast="index === (columns.length - 1)"
                         :isSeperator="rowColumnIndex % 2 === 1"
+                        :bottomOverlayAffectedArea="rowColumnIndex === 0 && displayBotttomOverlay"
                         :row="row"
                         :column="column"
-                        :rowIndex="(rowColumnIndex * 100) + rowIndex"
-                        :key="index">
+                        :rowIndex="rowIndex"
+                        :key="(rowColumnIndex * 100) + rowIndex">
                     </table-cell>
                 <!-- </div> -->
             </template>
@@ -97,6 +97,7 @@
                 rowHeight: 100,
                 nameColumWidth: 0,
                 overlayWidth: 0,
+                sectionalOverlayWidth: 0,
                 isHovered: false
             };
         },
@@ -140,17 +141,27 @@
             },
             resize () {
                 // TODO what is calling this??  it shouldn't
+                // TODO This should only be calcualted one, please put this in the table component,
+                // TODO or its mixins because calculating this 1000 times is going to make the system slower....
                 // Yeah it should not, this is causing a lot of overhead
                 setTimeout(() => {
                     this.rowHeight = this.$el.clientHeight;
                     const columns = this.$el.getElementsByClassName('v2-table__cell');
+                    this.sectionalOverlayWidth = null;
                     if (columns.length > 0) {
                         this.nameColumWidth = columns[0].clientWidth;
                         let totalOverlayWidth = 0;
                         for (let i = 1; i < columns.length; i++) {
-                            totalOverlayWidth += columns[i].clientWidth;
+                            const columnWidth = columns[i].clientWidth;
+                            if (columnWidth > 1 && columnWidth < 15 && !this.sectionalOverlayWidth) {
+                                this.sectionalOverlayWidth = totalOverlayWidth;
+                            }
+                            totalOverlayWidth += columnWidth;
                         }
                         this.overlayWidth = totalOverlayWidth;
+                        if (!this.sectionalOverlayWidth) {
+                            this.sectionalOverlayWidth = totalOverlayWidth;
+                        }
                     }
                 }, 10);
             }
