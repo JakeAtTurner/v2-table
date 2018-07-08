@@ -17,6 +17,14 @@
     props: {
       label: String,
       seperate: Boolean,
+      backgroundColor: {
+        type: String,
+        default: 'white'
+      },
+      color: {
+        type: String,
+        default: 'black'
+      },
       addToStyle: {
         type: Object,
         default: () => {
@@ -30,6 +38,12 @@
           'display': 'inline-block',
           'width': width + 'px',
           'text-align': 'center',
+          'height': '30px',
+          'font-style': 'italic',
+          'font-size': '1.5em',
+          'border': '1px solid black',
+          'background-color': this.backgroundColor,
+          'color': this.color,
           ...this.addToStyle
         }
       }

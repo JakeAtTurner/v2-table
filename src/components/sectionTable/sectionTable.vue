@@ -37,11 +37,13 @@
                     <div class="v2-table__table-wrapper">
                         <div class="v2-table__table-container" ref="container">
                             <!-- TODO this is where the header section will go, the one that will show the section headers -->
-                            <template v-for="(section,index) in sections">
-                                <div :style="section.getStyle(sectionWidths[index])">
-                                    {{section.label  + sectionWidths[index]}}
-                                </div>
-                            </template>
+                            <div>
+                                <template v-for="(section,index) in sections">
+                                    <div :style="section.getStyle(sectionWidths[index])">
+                                        {{section.label}}
+                                    </div>
+                                </template>
+                            </div>
 
                             <div class="v2-table__header-wrapper" ref="header" :style="{width: isContainerScroll ? contentWidth + 'px' : '100%'}">
                                 <div :class="[
@@ -92,11 +94,9 @@
 
                                         -->
                                         <template v-if="displayData && displayData.length > 0">
-                                          <div>
                                             <table-col-group :columns="columns"></table-col-group>
                                             <div class="v2-table__table-tbody">
                                                 <template v-for="(row, rowIndex) in rows">
-                                                  <!-- <div :key="rowIndex" style="display: table-row"> -->
                                                     <table-row
                                                         :row="row"
                                                         :rowIndex="rowIndex"
@@ -107,62 +107,9 @@
                                                         section
                                                     >
                                                     </table-row>
-                                                  <!-- </div> -->
                                                 </template>
                                             </div>
-                                          </div>
                                         </template>
-
-
-
-
-
-
-
-                                        <!-- TODO Need to be able to have the same heights for the sections -->
-                                        <!--TODO we need to make sure that there are not 2 table-col-groups, but just one of them-->
-                                        <!-- <template v-if="displayData && displayData.length > 0">
-                                          <div>
-                                            <template v-for="(section, index) in sections">
-                                                <table-col-group :key="index" :columns="section.columns"></table-col-group>
-                                            </template>
-                                            <div class="v2-table__table-tbody">
-                                                <template v-for="(row, rowIndex) in rows">
-                                                  <div :key="rowIndex" style="display: table-row">
-                                                    <table-row
-                                                        v-for="(section, sectionIndex) in sections"
-                                                        :key="sectionIndex" 
-                                                        :row="row"
-                                                        :rowIndex="rowIndex"
-                                                        :columns="section.columns"
-                                                        :hoverOverlayComponent="hoverOverlayComponent"
-                                                        :section="section">
-                                                    </table-row>
-                                                  </div>
-                                                </template>
-                                            </div>
-                                          </div>
-                                        </template> -->
-                                        
-                                        
-                                        <!-- <template v-for="(section, index) in sections">
-                                            <div :key="index">
-                                                <table-col-group :columns="section.columns" v-if="displayData && displayData.length > 0"></table-col-group>
-                                                <div class="v2-table__table-tbody" v-if="displayData && displayData.length > 0">
-                                                        <table-row
-                                                            class="v2-table__section-row"
-                                                            v-for="(row, index) in rows"
-                                                            :key="index" 
-                                                            :row="row"
-                                                            :rowIndex="index"
-                                                            :columns="section.columns"
-                                                            :hoverOverlayComponent="hoverOverlayComponent">
-                                                        </table-row>
-                                                </div>
-                                            </div>
-                                        </template> -->
-
-
                                     </div>
                                 </div>
                             </template>
