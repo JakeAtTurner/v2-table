@@ -56,10 +56,10 @@
                                         TODO so an idea would be to use rolespan to lengthen the rows in the table and then make the width 
                                         - 2Xborderlength to get the circular borders
                                     -->
-                                    <div class="v2-table__header__section">
+                                    <!-- <div class="v2-table__header__section"> -->
                                         <table-col-group :columns="columns"></table-col-group>
                                         <table-header :columns="columns" :sort="__sort" ref="headers"></table-header>
-                                    </div>
+                                    <!-- </div> -->
                                 </div>
                             </div>
 
@@ -89,7 +89,7 @@
                                             <table-col-group :columns="columns"></table-col-group>
                                             <div class="v2-table__table-tbody">
                                                 <template v-for="(row, rowIndex) in rows">
-                                                  <div :key="rowIndex" style="display: table-row">
+                                                  <!-- <div :key="rowIndex" style="display: table-row"> -->
                                                     <table-row
                                                         :row="row"
                                                         :rowIndex="rowIndex"
@@ -100,7 +100,7 @@
                                                         section
                                                     >
                                                     </table-row>
-                                                  </div>
+                                                  <!-- </div> -->
                                                 </template>
                                             </div>
                                           </div>
@@ -314,13 +314,26 @@
     .v2-table__header__section {
         display: inline-block;
     }
-
-    .v2-table__row.v2-table-row__section-row.v2-table-row {
-        margin: 10px 0px 10px 0px !important;
+    .v2-table__body { 
+        border-collapse: separate; 
+        border-spacing: 0 20px; 
+        // margin-top: -10px; /* correct offset on first border spacing if desired */
+    }
+    .v2-table__cell__border-outline {
+        border: solid 1px #000;
+        border-style: solid none;
+        padding: 10px;
+    }
+    .v2-table__cell__border-oultine__first-section {
+        border-left-style: solid;
+        border-top-left-radius: 10px; 
+        border-bottom-left-radius: 10px;
     }
 
-    .v2-table__cell {
-        border: none !important;
+    .v2-table__cell__border-oultine__last-section {
+        border-right-style: solid;
+        border-bottom-right-radius: 10px; 
+        border-top-right-radius: 10px; 
     }
 }
 </style>

@@ -33,20 +33,24 @@
             <template
                 v-if='section'
                 v-for="(columns, rowColumnIndex) in rowColumns">
-                <div
+                <!-- <div
                     :key="rowColumnIndex"
                     :class="{
                         'v2-table-row__section-row': true,
                         'v2-table-row__section-row__one-block': ((rowColumnIndex + 1) % 2 === 1)
-                    }">
+                    }"> -->
                     <table-cell
                         v-for="(column,index) in columns"
+                        apartOfSection
+                        :isFirst="index === 0"
+                        :isLast="index === (columns.length - 1)"
+                        :isSeperator="rowColumnIndex % 2 === 1"
                         :row="row"
                         :column="column"
-                        :rowIndex="rowIndex"
+                        :rowIndex="(rowColumnIndex * 100) + rowIndex"
                         :key="index">
                     </table-cell>
-                </div>
+                <!-- </div> -->
             </template>
             <template v-else>
                 <table-cell
@@ -206,7 +210,8 @@
 <style lang='scss'>
 .v2-table-row {
     &__section-row {
-        display: inline-block !important;
+        // display: inline-block !important;
+        display: table-row;
 
         &__one-block {
             border: 1px solid #ccc!important;

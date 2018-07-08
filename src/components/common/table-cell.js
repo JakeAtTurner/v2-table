@@ -11,11 +11,36 @@ import CheckBox from './checkbox.vue';
 export default {
     functional: true,
 
-    props: ['column', 'row', 'rowIndex'],
-
+    props: {
+        column: {
+            type: Object
+        },
+        row: {
+            type: Object
+        },
+        rowIndex: {
+            type: Number
+        },
+        apartOfSection: {
+            type: Boolean,
+            default: false
+        },
+        isFirst: {
+            type: Boolean,
+            default: false
+        },
+        isLast: {
+            type: Boolean,
+            default: false
+        },
+        isSeperator: {
+            type: Boolean,
+            deafult: false
+        }
+    },
     render (createElement, context) {
         const { props } = context;
-        const { row, column, rowIndex } = props;
+        const { row, column, rowIndex, apartOfSection } = props;
 
         const data = {
             class: {
@@ -28,6 +53,18 @@ export default {
                 width: (column.headerWidth || column.width) + 'px'
             }
         };
+        if (apartOfSection) {
+            const {isFirst, isLast, isSeperator} = props;
+            if (!isSeperator) {
+                data.class['v2-table__cell__border-outline'] = true;
+                if (isFirst) {
+                    data.class['v2-table__cell__border-oultine__first-section'] = true;
+                }
+                if (isLast) {
+                    data.class['v2-table__cell__border-oultine__last-section'] = true;
+                }
+            }
+        }
         
         if (column.type === 'selection') {
             return createElement('div', data, [createElement(CheckBox, {
