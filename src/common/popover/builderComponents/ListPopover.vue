@@ -1,8 +1,8 @@
 <template>
-  <popover-box class="list-popover" ref="popover" :parent="parent" :direction="direction">
+  <popover-box class="v2-table-list-popover" ref="popover" :parent="parent" :direction="direction">
     <div
       v-for="option in list"
-      class="list-popover__option"
+      class="v2-table-list-popover__option"
       :class="optionClass(option.value)"
       :style="optionStyle"
       @click="selectOption(option.value)"
@@ -57,7 +57,7 @@ export default {
 
 <style lang="scss">
 
-.list-popover {
+.v2-table-list-popover {
 
   &__option {
     width: 100%;

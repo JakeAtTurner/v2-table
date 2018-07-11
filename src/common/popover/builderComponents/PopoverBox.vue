@@ -1,13 +1,13 @@
 <template>
-  <div class="popover-box" :class="selectorClass" :style="[position, styles.popover]">
+  <div class="v2-table-popover-box" :class="selectorClass" :style="[position, styles.popover]">
 
-    <div class="popover-box__triangle" :class="triangleClass" v-if="triangleFirst" :style="offset"></div>
+    <div class="v2-table-popover-box__triangle" :class="triangleClass" v-if="triangleFirst" :style="offset"></div>
 
-      <div class="popover-box__content" :class="styles.content">
+      <div class="v2-table-popover-box__content" :class="styles.content">
         <slot></slot>
       </div>
 
-    <div class="popover-box__triangle" :class="triangleClass" v-if="!triangleFirst" :style="offset"></div>
+    <div class="v2-table-popover-box__triangle" :class="triangleClass" v-if="!triangleFirst" :style="offset"></div>
 
   </div>
 
@@ -25,35 +25,35 @@ const THEME = {
 const EDGE_DISTANCE = 10
 const PROP_MAP = {
   top: {
-    selectorClass: 'popover-box--selector-top',
+    selectorClass: 'v2-table-popover-box--selector-top',
     triangleClass: {
-      normal: 'popover-box--triangle-down',
-      white: 'popover-box--triangle-down-white',
-      black: 'popover-box--triangle-down-black'
+      normal: 'v2-table-popover-box--triangle-down',
+      white: 'v2-table-popover-box--triangle-down-white',
+      black: 'v2-table-popover-box--triangle-down-black'
     }
   },
   bottom: {
-    selectorClass: 'popover-box--selector-bottom',
+    selectorClass: 'v2-table-popover-box--selector-bottom',
     triangleClass: {
-      normal: 'popover-box--triangle-up',
-      white: 'popover-box--triangle-up-white',
-      black: 'popover-box--triangle-up-black'
+      normal: 'v2-table-popover-box--triangle-up',
+      white: 'v2-table-popover-box--triangle-up-white',
+      black: 'v2-table-popover-box--triangle-up-black'
     }
   },
   left: {
-    selectorClass: 'popover-box--selector-left',
+    selectorClass: 'v2-table-popover-box--selector-left',
     triangleClass: {
-      normal: 'popover-box--triangle-right',
-      white: 'popover-box--triangle-right-white',
-      black: 'popover-box--triangle-right-black'
+      normal: 'v2-table-popover-box--triangle-right',
+      white: 'v2-table-popover-box--triangle-right-white',
+      black: 'v2-table-popover-box--triangle-right-black'
     }
   },
   right: {
-    selectorClass: 'popover-box--selector-right',
+    selectorClass: 'v2-table-popover-box--selector-right',
     triangleClass: {
-      normal: 'popover-box--triangle-left',
-      white: 'popover-box--triangle-left-white',
-      black: 'popover-box--triangle-left-black'
+      normal: 'v2-table-popover-box--triangle-left',
+      white: 'v2-table-popover-box--triangle-left-white',
+      black: 'v2-table-popover-box--triangle-left-black'
     }
   }
 }
@@ -99,12 +99,12 @@ export default {
       if (this.colorTheme === THEME.WHITE) {
         return {
           popover: {'color': 'black'},
-          content: 'popover-box__content-white'
+          content: 'v2-table-popover-box__content-white'
         }
       } else {
         return {
           popover: {'color': 'white'},
-          content: 'popover-box__content-black'
+          content: 'v2-table-popover-box__content-black'
         }
       }
     }
@@ -194,11 +194,11 @@ export default {
   mounted () {
     this.reposition()
     window.addEventListener('resize', debounce(this.reposition, 15))
-    this.$el.classList.add('popover-box--fade-in')
+    this.$el.classList.add('v2-table-popover-box--fade-in')
   },
   beforeDestroy () {
     window.removeEventListener('resize', debounce(this.reposition, 15))
-    this.$el.classList.remove('popover-box--fade-out')
+    this.$el.classList.remove('v2-table-popover-box--fade-out')
   }
 }
 
@@ -207,7 +207,7 @@ export default {
 <style lang="scss">
 $global-easing: cubic-bezier(0.38, 0.46, 0.22, 1.01);
 
-.popover-box {
+.v2-table-popover-box {
   position: absolute;
   z-index: 666;
   transition: opacity .12s $global-easing;
