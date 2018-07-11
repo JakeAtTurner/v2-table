@@ -206,7 +206,7 @@
             // TODO this should more accurately only succed if the column headers have not been inserted
             // and the headers havent while, the sections have not changed either
             if (!this.sectionWidths.length > 0) {
-                this.setSectionWidths();
+                this.setSectionsColumnsAndWidths();
             }
             this.canRenderBody = true;
         },
@@ -226,8 +226,7 @@
                 }
                 this.columns = columns;
             },
-            setSectionWidths () {
-                const sectionWidths = [];
+            setSectionsColumnsAndWidths () {
                 const headers = this.headerElements;
                 if (headers.length > 0) {
                     for (let i = 0; i < this.columns.length; i++) {
@@ -235,6 +234,13 @@
                         const head = headers[i];
                         col.headerWidth = head.clientWidth;
                     }
+                    this.setSectionWidths()
+                }
+            },
+            setSectionWidths () {
+                const sectionWidths = [];
+                const headers = this.headerElements;
+                if (headers.length > 0) {
                     let currentHeader = 0;
                     for (let j = 0; j < this.columnsFromSections.length; j++) {
                         let columns = this.columnsFromSections[j];

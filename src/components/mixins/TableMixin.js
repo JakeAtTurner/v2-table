@@ -287,6 +287,9 @@ const tableMixin = {
 
       computeBodyStyle () {
           setTimeout(() => {
+              if (this.setSectionWidths) {
+                  this.setSectionWidths()
+              }
               let heightOfBody = null;
               if (this.$refs.tableArea) {
                   heightOfBody = this.$refs.tableArea.offsetParent.offsetHeight;
