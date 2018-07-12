@@ -17,8 +17,9 @@ export default {
     style () {
       return {
         top: this.heightOfRow + 'px',
-        left: this.lengthOfNonCoveredArea + 'px',
-        width: this.totalWidth + 'px'
+        left: this.lengthOfNonCoveredArea+ 'px',
+        // TODO make sure that this - 40 is taken care of nicely
+        width: (this.totalWidth - 40) + 'px'
       }
     }
   }

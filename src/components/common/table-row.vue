@@ -83,6 +83,10 @@
             displayBotttomOverlay: {
                 type: Boolean,
                 default: false
+            },
+            overlayColumnStart: {
+                Type: Number,
+                default: 1
             }
         },
         inject: ['table'],
@@ -143,11 +147,16 @@
                     const columns = this.$el.getElementsByClassName('v2-table__cell');
                     this.sectionalOverlayWidth = null;
                     if (columns.length > 0) {
-                        this.nameColumWidth = columns[0].clientWidth;
+                        // so we want to get the sum of the columns for the X number of columns
+                        let sumOfColumns = 0;
+                        for (let i = 0; i < this.overlayColumnStart; i++) {
+                            sumOfColumns += columns[i].clientWidth;
+                        }
+                        this.nameColumWidth = sumOfColumns;
                         let totalOverlayWidth = 0;
-                        for (let i = 1; i < columns.length; i++) {
+                        for (let i = this.overlayColumnStart; i < columns.length; i++) {
                             const columnWidth = columns[i].clientWidth;
-                            if (columnWidth > 1 && columnWidth < 15 && !this.sectionalOverlayWidth) {
+                            if (columnWidth > 1 && columnWidth < 25 && !this.sectionalOverlayWidth) {
                                 this.sectionalOverlayWidth = totalOverlayWidth;
                             }
                             totalOverlayWidth += columnWidth;

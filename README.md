@@ -162,6 +162,7 @@ npm run dev
 * filter-svg css class is in table.vue put it somewhere else
 * v2-table-row__bottom-overlay-row-affect is the affect applied when the bottomo overlay is handled
 * the table-bottom-overlay-section is only the first section, if the table is a section-table
+* make sure that this - 40 is taken care of nicely in row-bottom-overlay-section
 ##CHANGEAS
 * added in the overlay
 * got rid of the $emit('sort-change') it is better to keep it encapsulated

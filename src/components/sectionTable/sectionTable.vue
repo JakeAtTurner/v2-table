@@ -104,6 +104,7 @@
                                                         :columns="columns"
                                                         :hoverOverlayComponent="hoverOverlayComponent"
                                                         :bottomOverlayComponent="bottomOverlayComponent"
+                                                        :overlayColumnStart="overlayColumnStart"
                                                         section
                                                     >
                                                     </table-row>

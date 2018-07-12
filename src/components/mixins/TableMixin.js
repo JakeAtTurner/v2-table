@@ -95,6 +95,10 @@ const tableMixin = {
     },
     hoverOverlayComponent: String,
     bottomOverlayComponent: String,
+    overlayColumnStart: {   // this is where the overlay will start after when the overlay displays
+        type: Number,
+        default: 1
+    },
     windowData: {
         type: Boolean,
         default: false
