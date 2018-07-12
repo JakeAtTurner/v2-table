@@ -2,8 +2,8 @@ import 'beautify-scrollbar/dist/index.css';
 import './style/index.less';
 
 import Table from './components/table/table.vue';
-import SectionTable from './components/sectionTable/sectionTable'
-import Section from './components/sectionTable/section'
+import SectionTable from './components/sectionTable/sectionTable.vue';
+import Section from './components/sectionTable/section.vue';
 import TableColumn from './components/common/table-column.vue';
 
 import Bus from './bus.js';
