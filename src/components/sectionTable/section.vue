@@ -39,9 +39,8 @@
           'width': width + 'px',
           'text-align': 'center',
           'height': '30px',
-          'font-style': 'italic',
-          'font-size': '1.5em',
-          'border': '1px solid black',
+          'font-size': '1.25em',
+          'padding-top': '2px',
           'background-color': this.backgroundColor,
           'color': this.color,
           ...this.addToStyle
