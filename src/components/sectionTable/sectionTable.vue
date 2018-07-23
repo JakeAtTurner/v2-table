@@ -72,8 +72,11 @@
                                 </div>
                             </div>
 
+                            <template v-if="isLoading">
+                                <slot name="loading"></slot>
+                            </template>
                             <!-- body -->
-                            <template v-if="canRenderBody">
+                            <template v-if="canRenderBody && !isLoading">
                                 <div class="v2-table__body-wrapper" ref="body" :style="bodyStyle">
                                     <div :class="[
                                         'v2-table__body',
@@ -118,15 +121,6 @@
                             <!-- <div class="v2-table__footer-wrapper" ref="footer" :style="{width: isContainerScroll ? contentWidth + 'px' : '100%'}">
                                 <table-footer type="normal" :cols="columns" v-if="showSummary" v-show="displayData && displayData.length > 0"></table-footer>
                             </div> -->
-
-                            <!-- Table loading -->
-                            <div class="v2-table__data-loading" v-if="loading">
-                                <slot name="loading">
-                                    <div class="v2-table__loading-spinner">
-                                        <svg viewBox="25 25 50 50" class="circular"><circle cx="50" cy="50" r="20" fill="none" class="path"></circle></svg>
-                                    </div>
-                                </slot>
-                            </div>
                         </div>
                     </div>
                 </div>

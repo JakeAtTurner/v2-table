@@ -39,10 +39,6 @@ const tableMixin = {
         type: Boolean,
         default: false
     },
-    loading: { // not sure if this should be here
-        type: Boolean,
-        default: false
-    },
     emptyText: {    // not sure if tyhis should be here
         type: String,
         default: 'No Data'
@@ -90,6 +86,10 @@ const tableMixin = {
     summaryMethod: Function,
     rowClassName: [String, Function],
     lazyLoad: {
+        type: Boolean,
+        default: false
+    },
+    loading: {
         type: Boolean,
         default: false
     },
@@ -164,7 +164,9 @@ const tableMixin = {
           scrollLeft: 0,
 
           // Styles
-          bodyStyle: null
+          bodyStyle: null,
+
+          isLoading: false
       };
   },
 
@@ -356,27 +358,31 @@ const tableMixin = {
           this.resetDataOrder();
       },
       filter () {
-          let data = this.data;
-          if (this.$refs.headers) {
-              // TODO when you implement the filters, make sure that you get the values of the filters
-              const headers = this.$refs.headers
-
-              let filters = []
-              if (Array.isArray(headers)) {
-                filters = this.$refs.headers.reduce((arr, header) => {
-                    return arr.concat(header.getFilters())
-                }, []);
-              } else {
-                filters = this.$refs.headers.getFilters();
-              }
-              data = applyFilters(filters, data);
-          }
-          if (this.externalFiltering) {
-              data = this.externalFiltering(data);
-          }
-          this.displayData = [].concat(data);
-          this.sortDisplayData();
-          this.initRows();
+          this.isLoading = true
+          setTimeout(() => {
+            let data = this.data;
+            if (this.$refs.headers) {
+                // TODO when you implement the filters, make sure that you get the values of the filters
+                const headers = this.$refs.headers
+  
+                let filters = []
+                if (Array.isArray(headers)) {
+                  filters = this.$refs.headers.reduce((arr, header) => {
+                      return arr.concat(header.getFilters())
+                  }, []);
+                } else {
+                  filters = this.$refs.headers.getFilters();
+                }
+                data = applyFilters(filters, data);
+            }
+            if (this.externalFiltering) {
+                data = this.externalFiltering(data);
+            }
+            this.displayData = [].concat(data);
+            this.sortDisplayData();
+            this.initRows();
+            this.isLoading = false
+          }, 10)
       },
       resetDataOrder () {
           this.sortDisplayData();

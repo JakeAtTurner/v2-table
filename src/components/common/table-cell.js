@@ -58,6 +58,9 @@ export default {
                 width: (column.headerWidth || column.width) + 'px'
             }
         };
+        // TODO remove this inside the table component, to get rid of unneccessary calculations
+        // THis should be created on the outside of the table, only once, because the table has 
+        // the same columns for each row,  this will never change
         if (apartOfSection) {
             const {isFirst, isLast, isSeperator} = props;
             if (!isSeperator) {
@@ -70,7 +73,6 @@ export default {
                 }
             }
         }
-        
         if (column.type === 'selection') {
             return createElement('div', data, [createElement(CheckBox, {
                 props: {
@@ -83,6 +85,10 @@ export default {
                 return createElement('div', data, column.$scopedSlots.default(row));
             } else if (column.$scopedSlots.rowIndex) {
                 return createElement('div', data, column.$scopedSlots.rowIndex(rowIndex));
+            } else {
+                data.domProps = {};
+                data.domProps.innerHTML = typeof row[column.prop] !== 'undefined' ? row[column.prop] : '';
+                return createElement('div', data);
             }
         } else {
             data.domProps = {};
