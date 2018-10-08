@@ -74,7 +74,7 @@
                                     <div class="v2-table__table-tbody" v-if="displayData && displayData.length > 0">
                                             <table-row 
                                                 v-for="(row, index) in rows"
-                                                :key="index" 
+                                                :key="rowKey ? row[rowKey] : index"
                                                 :row="row"
                                                 :rowIndex="index"
                                                 :columns="columns"
@@ -125,6 +125,11 @@
             this.filter();
             this.handleScrollingAndAdjustments();
             this.setColumns();
+        },
+        computed: {
+          rowClassName () {
+            return ['v2-table__row']
+          }
         },
         methods: {
             setColumns () {

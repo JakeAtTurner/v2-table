@@ -53,8 +53,8 @@
             getRowStyle () {
                 const style = {};
 
-                if (!isNaN(parseInt(this.table.rowHeight, 10))) {
-                    style.height = parseInt(this.table.rowHeight, 10) + 'px';
+                if (!isNaN(parseInt(this.table.rowHeight, 0))) {
+                    style.height = parseInt(this.table.rowHeight, 0) + 'px';
                 }
 
                 return style;

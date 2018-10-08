@@ -84,7 +84,8 @@ const tableMixin = {
         default: 'Sum'
     },
     summaryMethod: Function,
-    rowClassName: [String, Function],
+    // JAKE
+    //rowClassName: [Array, Function],
     lazyLoad: {
         type: Boolean,
         default: false
@@ -124,7 +125,7 @@ const tableMixin = {
           rightColumns: [],
           selectionColumn: null,
           selectedBottomOverlayIndex: null,
-
+        
           displayData: [],
           __sortingFunc: (d) => d,
           // row select status
@@ -152,12 +153,12 @@ const tableMixin = {
 
           // for on demand loading
           VOEWPORT_MIN_HEIGHT: voewportMin,
-          ITEM_MIN_HEIGHT: 20,
+          ITEM_MIN_HEIGHT: 10,
           // TODO rh is not a valid number, it does not contain the row Height all the time
           // need to ensure that this is always correct
           // there is a way to get the rh, it is using the 
           // BEFORE rh: (this.isValidNumber(rh) || rh <= this.ITEM_MIN_HEIGHT) ? this.ITEM_MIN_HEIGHT : rh,
-          rh: 58, // AFTER: this will service my needs all my rows have 56 hieght
+          rh: 0, // AFTER: this will service my needs all my rows have 56 hieght
           bodyHeight: voewportMin,
           contentMarginTop: 0,
           scrollTop: 0,
@@ -233,7 +234,7 @@ const tableMixin = {
           immediate: true,
           handler (val) {
               if (val.length > 0) {
-                  this.displayData = [].concat(val);
+                  this.displayData = val;
                   this.filter();
               }
           }
@@ -568,7 +569,7 @@ const tableMixin = {
                   this.rows = [].concat(this.displayData);
               }
           }
-          this.rows = this.rows.slice(0, 200);
+          this.rows = this.rows.slice(0, 20);
       },
 
       adjustRows () {
