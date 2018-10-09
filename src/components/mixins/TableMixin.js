@@ -21,6 +21,7 @@ const tableMixin = {
         default: () => [],
         required: true
     },
+    rowKey: String,
     sort: {
         type: Object,
         default: () => {
@@ -84,7 +85,8 @@ const tableMixin = {
         default: 'Sum'
     },
     summaryMethod: Function,
-    rowClassName: [String, Function],
+    // JAKE
+    //rowClassName: [String, Function],
     lazyLoad: {
         type: Boolean,
         default: false
@@ -124,7 +126,7 @@ const tableMixin = {
           rightColumns: [],
           selectionColumn: null,
           selectedBottomOverlayIndex: null,
-
+        
           displayData: [],
           __sortingFunc: (d) => d,
           // row select status
@@ -233,7 +235,7 @@ const tableMixin = {
           immediate: true,
           handler (val) {
               if (val.length > 0) {
-                  this.displayData = [].concat(val);
+                  this.displayData = val;
                   this.filter();
               }
           }

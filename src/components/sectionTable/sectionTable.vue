@@ -101,6 +101,7 @@
                                             <div class="v2-table__table-tbody">
                                                 <template v-for="(row, rowIndex) in rows">
                                                     <table-row
+                                                        :key="rowKey ? row[rowKey] : index"
                                                         :row="row"
                                                         :rowIndex="rowIndex"
                                                         :displayBotttomOverlay="rowIndex === selectedBottomOverlayIndex"
@@ -183,6 +184,9 @@
             },
             numberOfColumns () {
               return this.columns.length;
+            },
+            rowClassName () {
+              return ['v2-table-row__section-row', 'v2-table-row__section-row__one-block']
             }
         },
         mounted () {
