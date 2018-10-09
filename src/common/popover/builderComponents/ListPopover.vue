@@ -66,7 +66,7 @@ export default {
     padding-bottom: 6px;
     cursor: pointer;
     text-align: center;
-    height: 15px;
+
     &:hover {
       color: color(yellow);
     }

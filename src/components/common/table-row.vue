@@ -1,9 +1,12 @@
 <template>
         <div
             role="row"
-            :id= "id"
+            id="roleIndex"
             ref="rowIndex"
-            :class="[...rowclass]"
+            :class="{
+                [getRowClass()]: true,
+                'v2-table-row': true
+            }"
             @mouseenter="handleRowHover"
             @mouseleave="handleRowLeave">
             <template v-if="isHoveredAndHasHovered">
@@ -84,10 +87,6 @@
             overlayColumnStart: {
                 Type: Number,
                 default: 1
-            },
-            id: {
-                type: String,
-                default: this.rowIndex
             }
         },
         inject: ['table'],
@@ -97,40 +96,39 @@
                 nameColumWidth: 0,
                 overlayWidth: 0,
                 sectionalOverlayWidth: 0,
-                isHovered: false,
-                rowclass: this.table.rowClassName
+                isHovered: false
             };
         },
         methods: {
-            // getRowClass () {
-            //     // TODO consolidate this to a css selector style instead
-            //     // TODO add stuff here
-            //     const cls = ['v2-table__row'];
-            //     if (this.table.stripe && (this.rowIndex + 1) % 2 === 0) {
-            //         cls.push('v2-table__row-striped');
-            //     }
-            //     if (this.section) {
-            //         cls.push('v2-table-row__section-row');
-            //         // TODO move this to the cell position
-            //         // if (!this.section.seperate) {
-            //         //     cls.push('v2-table-row__section-row__one-block');
-            //         // }
-            //     }
-            //     if (typeof this.table.rowClassName !== 'undefined') {
-            //         const customRowClass = typeof this.table.rowClassName === 'function' ? this.table.rowClassName({ row: this.row, rowIndex: this.rowIndex }) : this.table.rowClassName;
-            //         cls.push(typeof customRowClass === 'string' ? customRowClass : '');
-            //     }
-            //     return cls.join(' ');
-            // },
+            getRowClass () {
+                // TODO consolidate this to a css selector style instead
+                // TODO add stuff here
+                const cls = ['v2-table__row'];
+                if (this.table.stripe && (this.rowIndex + 1) % 2 === 0) {
+                    cls.push('v2-table__row-striped');
+                }
+                if (this.section) {
+                    cls.push('v2-table-row__section-row');
+                    // TODO move this to the cell position
+                    // if (!this.section.seperate) {
+                    //     cls.push('v2-table-row__section-row__one-block');
+                    // }
+                }
+                if (typeof this.table.rowClassName !== 'undefined') {
+                    const customRowClass = typeof this.table.rowClassName === 'function' ? this.table.rowClassName({ row: this.row, rowIndex: this.rowIndex }) : this.table.rowClassName;
+                    cls.push(typeof customRowClass === 'string' ? customRowClass : '');
+                }
+                return cls.join(' ');
+            },
 
-            // getRowStyle () {
-            //     const style = {};
-            //
-            //     if (!isNaN(parseInt(this.table.rowHeight, 10))) {
-            //         style.height = parseInt(this.table.rowHeight, 10) + 'px';
-            //     }
-            //     return style;
-            // },
+            getRowStyle () {
+                const style = {};
+
+                if (!isNaN(parseInt(this.table.rowHeight, 10))) {
+                    style.height = parseInt(this.table.rowHeight, 10) + 'px';
+                }
+                return style;
+            },
 
             handleRowHover (e) {
                 this.isHovered = true;
@@ -138,38 +136,38 @@
 
             handleRowLeave () {
                 this.isHovered = false;
+            },
+            resize () {
+                // TODO what is calling this??  it shouldn't
+                // TODO This should only be calcualted one, please put this in the table component,
+                // TODO or its mixins because calculating this 1000 times is going to make the system slower....
+                // Yeah it should not, this is causing a lot of overhead
+                setTimeout(() => {
+                    this.rowHeight = this.$el.clientHeight;
+                    const columns = this.$el.getElementsByClassName('v2-table__cell');
+                    this.sectionalOverlayWidth = null;
+                    if (columns.length > 0) {
+                        // so we want to get the sum of the columns for the X number of columns
+                        let sumOfColumns = 0;
+                        for (let i = 0; i < this.overlayColumnStart; i++) {
+                            sumOfColumns += columns[i].clientWidth;
+                        }
+                        this.nameColumWidth = sumOfColumns;
+                        let totalOverlayWidth = 0;
+                        for (let i = this.overlayColumnStart; i < columns.length; i++) {
+                            const columnWidth = columns[i].clientWidth;
+                            if (columnWidth > 1 && columnWidth < 25 && !this.sectionalOverlayWidth) {
+                                this.sectionalOverlayWidth = totalOverlayWidth;
+                            }
+                            totalOverlayWidth += columnWidth;
+                        }
+                        this.overlayWidth = totalOverlayWidth;
+                        if (!this.sectionalOverlayWidth) {
+                            this.sectionalOverlayWidth = totalOverlayWidth;
+                        }
+                    }
+                }, 10);
             }
-            // resize () {
-            //     // TODO what is calling this??  it shouldn't
-            //     // TODO This should only be calcualted one, please put this in the table component,
-            //     // TODO or its mixins because calculating this 1000 times is going to make the system slower....
-            //     // Yeah it should not, this is causing a lot of overhead
-            //     setTimeout(() => {
-            //         this.rowHeight = this.$el.clientHeight;
-            //         const columns = this.$el.getElementsByClassName('v2-table__cell');
-            //         this.sectionalOverlayWidth = null;
-            //         if (columns.length > 0) {
-            //             // so we want to get the sum of the columns for the X number of columns
-            //             let sumOfColumns = 0;
-            //             for (let i = 0; i < this.overlayColumnStart; i++) {
-            //                 sumOfColumns += columns[i].clientWidth;
-            //             }
-            //             this.nameColumWidth = sumOfColumns;
-            //             let totalOverlayWidth = 0;
-            //             for (let i = this.overlayColumnStart; i < columns.length; i++) {
-            //                 const columnWidth = columns[i].clientWidth;
-            //                 if (columnWidth > 1 && columnWidth < 25 && !this.sectionalOverlayWidth) {
-            //                     this.sectionalOverlayWidth = totalOverlayWidth;
-            //                 }
-            //                 totalOverlayWidth += columnWidth;
-            //             }
-            //             this.overlayWidth = totalOverlayWidth;
-            //             if (!this.sectionalOverlayWidth) {
-            //                 this.sectionalOverlayWidth = totalOverlayWidth;
-            //             }
-            //         }
-            //     }, 10);
-            // }
         },
         computed: {
             overlayNameStyle () {
@@ -208,14 +206,13 @@
                 return rowColumns;
             }
         },
-        // mounted () {
-            // this.resize();
-            // console.log('resei ', )
-            // window.addEventListener('resize', this.resize);
-        // },
-        // destroyed () {
-        //     window.removeEventListener('resize', this.resize);
-        // },
+        mounted () {
+            this.resize();
+            window.addEventListener('resize', this.resize);
+        },
+        destroyed () {
+            window.removeEventListener('resize', this.resize);
+        },
         components: {
             TableCell,
             RowHoveredSection,
@@ -225,5 +222,16 @@
 </script>
 
 <style lang='scss'>
+.v2-table-row {
+    &__section-row {
+        // display: inline-block !important;
+        display: table-row;
+
+        &__one-block {
+            border: 1px solid #ccc!important;
+            border-radius: 16px;
+        }
+    }
+}
 
 </style>

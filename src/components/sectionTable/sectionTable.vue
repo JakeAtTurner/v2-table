@@ -103,7 +103,6 @@
                                                     <table-row
                                                         :row="row"
                                                         :rowIndex="rowIndex"
-                                                        :id="row.id || rowIndex"
                                                         :displayBotttomOverlay="rowIndex === selectedBottomOverlayIndex"
                                                         :columns="columns"
                                                         :hoverOverlayComponent="hoverOverlayComponent"
@@ -184,9 +183,6 @@
             },
             numberOfColumns () {
               return this.columns.length;
-            },
-            rowClassName () {
-              return ['v2-table__row', 'v2-table-row__section-row', 'v2-table-row__section-row__one-block']
             }
         },
         mounted () {
