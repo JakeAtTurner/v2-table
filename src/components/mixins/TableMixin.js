@@ -22,6 +22,10 @@ const tableMixin = {
         required: true
     },
     rowKey: String,
+    refreshTable: {
+      type: Boolean,
+      default: true
+    },
     sort: {
         type: Object,
         default: () => {
@@ -360,7 +364,7 @@ const tableMixin = {
           this.resetDataOrder();
       },
       filter () {
-          this.isLoading = true
+          if(this.refreshTable !== false) this.isLoading = true
           setTimeout(() => {
             let data = this.data;
             if (this.$refs.headers) {
@@ -383,7 +387,7 @@ const tableMixin = {
             this.displayData = [].concat(data);
             this.sortDisplayData();
             this.initRows();
-            this.isLoading = false
+            if(this.refreshTable !== false) this.isLoading = false
           }, 10)
       },
       resetDataOrder () {
