@@ -13,8 +13,8 @@ const createStringSort = function (prop) {
         let stringA = getAttribute(a, prop);
         let stringB = getAttribute(b, prop);
         if (stringA && stringB) {
-            stringA = stringA.toLowerCase();
-            stringB = stringB.toLowerCase();
+            stringA = stringA.toString().toLowerCase();
+            stringB = stringB.toString().toLowerCase();
             if (stringA < stringB) {
                 return -1;
             } else if (stringA > stringB) {
