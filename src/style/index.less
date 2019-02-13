@@ -130,12 +130,11 @@
     }
     &.v2-table__row-cell {
         color: @color-primary;
-        // white-space: normal;
-        // word-wrap: break-word;
-        // word-break: break-all;
-        /** 简化列的固定，后续提供类似 rowHeight/colHeight 等属性来设置行高 **/
-        white-space: nowrap;
-        text-overflow: ellipsis;
+    }
+    &.v2-table__text-overflow {
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
     }
     &.v2-table__footer-cell {
         background-color: @background-color-hover;

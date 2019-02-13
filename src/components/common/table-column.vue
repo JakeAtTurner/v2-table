@@ -36,6 +36,10 @@
                 default: 'center',
                 validator: (val) => ['left', 'center', 'right'].indexOf(val) > -1
             },
+            wrapText: {
+              type: Boolean,
+              default: false
+            },
             renderHeader: [Function]
         },
         data: () => {
